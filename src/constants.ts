@@ -1,4 +1,4 @@
-export const CHECKOUT_URL = 'https://checkout.example.com';
+export const CHECKOUT_URL = 'https://pay.hotmart.com/B106469520T?checkoutMode=10';
 export const VSL_VIDEO_URL = 'https://www.youtube.com/embed/VIDEO_ID';
 
 export const TOTAL_QUESTIONS = 8;

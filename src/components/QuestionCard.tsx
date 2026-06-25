@@ -23,12 +23,24 @@ export default function QuestionCard({
 }: QuestionCardProps) {
   return (
     <div
-      className="quiz-screen anim-slide-in-right"
-      style={{ background: 'linear-gradient(180deg,#fff0f5 0%,#fce8f3 100%)' }}
+      className="anim-fade-in"
+      style={{
+        minHeight: '100vh',
+        minHeight: '100dvh',
+        display: 'flex',
+        flexDirection: 'column',
+        background: 'linear-gradient(180deg,#fff0f5 0%,#fce8f3 100%)',
+        maxWidth: '100%',
+        overflowX: 'hidden',
+      }}
     >
-      {/* Header */}
-      <div className="quiz-header">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+      {/* Top bar */}
+      <div style={{
+        paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)',
+        paddingInline: 20,
+        flexShrink: 0,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
           <span style={{ fontSize: 11, fontWeight: 500, color: '#f27db8', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
             Evaluación Emocional™
           </span>
@@ -38,9 +50,16 @@ export default function QuestionCard({
       </div>
 
       {/* Content */}
-      <div className="quiz-body">
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        padding: '16px 20px',
+        minHeight: 0,
+      }}>
         <h2
-          className="anim-fade-up delay-100 compact-font"
+          className="anim-fade-up delay-100"
           style={{
             fontFamily: "'Playfair Display', Georgia, serif",
             fontSize: 20, lineHeight: 1.35,
@@ -50,7 +69,7 @@ export default function QuestionCard({
           {question}
         </h2>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }} className="compact-gap">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {children}
         </div>
 
@@ -65,7 +84,10 @@ export default function QuestionCard({
 
       {/* Footer */}
       {!autoAdvance && (
-        <div className="quiz-footer">
+        <div style={{
+          flexShrink: 0,
+          padding: '8px 20px calc(env(safe-area-inset-bottom, 0px) + 24px)',
+        }}>
           <button
             onClick={canNext ? onNext : undefined}
             disabled={!canNext}

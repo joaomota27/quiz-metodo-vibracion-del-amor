@@ -84,7 +84,6 @@ export default function QuickQuestionsScreen({ initialValues, onAnswer, soundEna
     setters[step](label);
   }
 
-  // Auto-advance after selection
   useEffect(() => {
     if (!currentVal) return;
     const t = setTimeout(() => {
@@ -103,12 +102,24 @@ export default function QuickQuestionsScreen({ initialValues, onAnswer, soundEna
 
   return (
     <div
-      className="quiz-screen anim-slide-in-right"
-      style={{ background: 'linear-gradient(180deg,#fff0f5 0%,#fce8f3 100%)' }}
+      className="anim-fade-in"
+      style={{
+        minHeight: '100vh',
+        minHeight: '100dvh',
+        display: 'flex',
+        flexDirection: 'column',
+        background: 'linear-gradient(180deg,#fff0f5 0%,#fce8f3 100%)',
+        maxWidth: '100%',
+        overflowX: 'hidden',
+      }}
     >
-      {/* Header */}
-      <div className="quiz-header">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+      {/* Top bar */}
+      <div style={{
+        paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)',
+        paddingInline: 20,
+        flexShrink: 0,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
           <span style={{ fontSize: 11, fontWeight: 500, color: '#f27db8', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
             Preguntas Rápidas
           </span>
@@ -117,11 +128,18 @@ export default function QuickQuestionsScreen({ initialValues, onAnswer, soundEna
         <ProgressBar current={step + 6} total={8} />
       </div>
 
-      {/* Body */}
-      <div className="quiz-body">
+      {/* Content */}
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        padding: '16px 20px',
+        minHeight: 0,
+      }}>
         <h2
           key={step}
-          className="anim-fade-up delay-100 compact-font"
+          className="anim-fade-up delay-100"
           style={{
             fontFamily: "'Playfair Display', Georgia, serif",
             fontSize: 18, lineHeight: 1.35,
@@ -133,7 +151,7 @@ export default function QuickQuestionsScreen({ initialValues, onAnswer, soundEna
 
         <div
           key={`opts-${step}`}
-          className="anim-fade-up delay-200 compact-gap"
+          className="anim-fade-up delay-200"
           style={{ display: 'flex', justifyContent: 'center', gap: 10, flexWrap: 'wrap' }}
         >
           {currentQ.options.map(o => (
@@ -156,8 +174,14 @@ export default function QuickQuestionsScreen({ initialValues, onAnswer, soundEna
         )}
       </div>
 
-      {/* Footer — progress dots for sub-steps */}
-      <div className="quiz-footer" style={{ display: 'flex', justifyContent: 'center', gap: 6 }}>
+      {/* Footer — progress dots */}
+      <div style={{
+        flexShrink: 0,
+        display: 'flex',
+        justifyContent: 'center',
+        gap: 6,
+        padding: '8px 20px calc(env(safe-area-inset-bottom, 0px) + 24px)',
+      }}>
         {QUESTIONS.map((_, i) => (
           <div key={i} style={{
             width: i === step ? 24 : 8,

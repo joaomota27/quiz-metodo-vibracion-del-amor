@@ -316,39 +316,6 @@
 }
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 
-/* ── Quiz mobile-first: one question per screen ──────────── */
-
-.quiz-screen {
-  min-height: 100vh;
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  max-width: 100%;
-  overflow-x: hidden;
-}
-
-.quiz-header {
-  padding: calc(env(safe-area-inset-top, 0px) + 16px) 20px 8px;
-  flex-shrink: 0;
-}
-
-.quiz-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 8px 20px;
-  min-height: 0;
-  overflow-y: auto;
-  scrollbar-width: none;
-}
-.quiz-body::-webkit-scrollbar { display: none; }
-
-.quiz-footer {
-  flex-shrink: 0;
-  padding: 8px 20px calc(env(safe-area-inset-bottom, 0px) + 24px);
-}
-
 /* ── Audio player (Spotify-style) ────────────────────────── */
 
 .audio-player {
@@ -514,9 +481,6 @@
 /* ── Short viewport tuning ───────────────────────────────── */
 
 @media (max-height: 699px) {
-  .quiz-header { padding-top: calc(env(safe-area-inset-top, 0px) + 10px); }
-  .quiz-body   { padding-top: 4px; padding-bottom: 4px; }
-  .quiz-footer { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); }
   .answer-card { padding: 0.7rem !important; }
   .cta-btn    { padding: 0.85rem 2rem !important; }
 }

@@ -168,7 +168,7 @@ export default function App() {
 
   return (
     <AppLayout withBottomNav={screen === 'result' || screen === 'vsl' || screen === 'sales'}>
-      <div onClick={handleFirstInteraction} className="safe-top" style={{ width: '100%' }}>
+      <div onClick={handleFirstInteraction} style={{ width: '100%' }}>
         {screen === 'welcome' && <WelcomeScreen onStart={handleStart} {...sp} />}
         {screen === 'before-start' && <BeforeStartScreen onContinue={handleBeforeStartContinue} {...sp} />}
         {screen === 'question-1' && <Question1Screen initialValue={answers.q1} onAnswer={handleQ1} {...sp} />}

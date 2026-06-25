@@ -5,6 +5,13 @@
 @layer base {
   * {
     -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
+  }
+
+  html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+    overscroll-behavior: none;
   }
 
   body {
@@ -13,11 +20,31 @@
     -moz-osx-font-smoothing: grayscale;
     background: #fdf4f8;
     overscroll-behavior: none;
+    width: 100%;
   }
 
   h1, h2, h3 {
     font-family: 'Playfair Display', Georgia, serif;
   }
+
+  /* Safe area insets for iPhone notch / Dynamic Island */
+  .safe-top    { padding-top: env(safe-area-inset-top); }
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+  .safe-left   { padding-left: env(safe-area-inset-left); }
+  .safe-right  { padding-right: env(safe-area-inset-right); }
+}
+
+/* ── Short viewport (height < 700px) ─────────────────────── */
+@media (max-height: 699px) {
+  .compact-reduce {
+    --compact-scale: 0.85;
+  }
+  .compact-reduce .compact-pad   { padding-top: 8px !important; padding-bottom: 8px !important; }
+  .compact-reduce .compact-gap   { gap: 8px !important; }
+  .compact-reduce .compact-mb    { margin-bottom: 12px !important; }
+  .compact-reduce .compact-mb-sm { margin-bottom: 8px !important; }
+  .compact-reduce .compact-font  { font-size: 17px !important; }
+  .compact-reduce .compact-card  { padding: 10px !important; }
 }
 
 /* ── Transitions / Animations ───────────────────────────── */
@@ -288,3 +315,208 @@
   scrollbar-width: none;
 }
 .scrollbar-hide::-webkit-scrollbar { display: none; }
+
+/* ── Quiz mobile-first: one question per screen ──────────── */
+
+.quiz-screen {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.quiz-header {
+  padding: calc(env(safe-area-inset-top, 0px) + 16px) 20px 8px;
+  flex-shrink: 0;
+}
+
+.quiz-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 8px 20px;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.quiz-body::-webkit-scrollbar { display: none; }
+
+.quiz-footer {
+  flex-shrink: 0;
+  padding: 8px 20px calc(env(safe-area-inset-bottom, 0px) + 24px);
+}
+
+/* ── Audio player (Spotify-style) ────────────────────────── */
+
+.audio-player {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.audio-player-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.audio-player-cover {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.audio-player-info {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.audio-player-title {
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.audio-player-sub {
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.audio-player-play {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.15s ease;
+}
+.audio-player-play:active { transform: scale(0.92); }
+
+.audio-player-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+}
+
+.audio-player-track {
+  flex: 1;
+  height: 4px;
+  border-radius: 9999px;
+  background: rgba(255,255,255,0.15);
+  cursor: pointer;
+  position: relative;
+  min-width: 0;
+}
+
+.audio-player-track-fill {
+  height: 100%;
+  border-radius: 9999px;
+  position: relative;
+  transition: width 0.1s linear;
+}
+
+.audio-player-track-thumb {
+  position: absolute;
+  top: 50%;
+  transform: translate(50%, -50%);
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+.audio-player-time {
+  font-size: 10px;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Calendar grid (gamified) ────────────────────────────── */
+
+.calendar-grid {
+  display: grid;
+  gap: 6px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.calendar-grid-mobile  { grid-template-columns: repeat(5, 1fr); }
+.calendar-grid-tablet  { grid-template-columns: repeat(6, 1fr); }
+.calendar-grid-desktop { grid-template-columns: repeat(7, 1fr); }
+
+.calendar-day {
+  aspect-ratio: 1;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.calendar-day:active { transform: scale(0.92); }
+
+/* ── Bottom navigation ───────────────────────────────────── */
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  z-index: 100;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 12px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+/* ── Short viewport tuning ───────────────────────────────── */
+
+@media (max-height: 699px) {
+  .quiz-header { padding-top: calc(env(safe-area-inset-top, 0px) + 10px); }
+  .quiz-body   { padding-top: 4px; padding-bottom: 4px; }
+  .quiz-footer { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); }
+  .answer-card { padding: 0.7rem !important; }
+  .cta-btn    { padding: 0.85rem 2rem !important; }
+}

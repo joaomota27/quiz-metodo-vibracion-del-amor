@@ -3,6 +3,8 @@ import { CHECKOUT_URL } from '../constants';
 import CTAButton from '../components/CTAButton';
 import TestimonialCard from '../components/TestimonialCard';
 import FAQItem from '../components/FAQItem';
+import CalendarGrid from '../components/CalendarGrid';
+import AudioPlayer, { type AudioTrack } from '../components/AudioPlayer';
 import React from 'react';
 
 function goToCheckout() { window.location.href = CHECKOUT_URL; }
@@ -54,6 +56,14 @@ const S: Record<string, React.CSSProperties> = {
   sectionLight: { padding: '28px 20px', background: 'linear-gradient(135deg,#fff0f5,#fce8f3)' },
   h2: { fontFamily: "'Playfair Display',Georgia,serif", fontSize: 22, color: '#1f2937', lineHeight: 1.35, marginBottom: 16 },
   h2Light: { fontFamily: "'Playfair Display',Georgia,serif", fontSize: 22, color: 'white', lineHeight: 1.35, marginBottom: 16 },
+};
+
+const SAMPLE_TRACK: AudioTrack = {
+  id: 'sample-morning',
+  title: 'Amor Propio — Mañana',
+  subtitle: 'Frecuencia Matutina · Día 7',
+  src: 'https://www.soundjay.com/buttons/sounds/button-09.mp3',
+  coverColor: 'linear-gradient(135deg,#e8539c,#f27db8)',
 };
 
 export default function SalesPage() {
@@ -149,7 +159,7 @@ export default function SalesPage() {
         <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13, lineHeight: 1.65, marginBottom: 24 }}>
           Cada día tendrás una frecuencia para la mañana y otra para antes de dormir. La experiencia fue diseñada para ser simple, elegante y fácil de seguir.
         </p>
-        <div style={{ maxWidth: 280, margin: '0 auto', background: 'rgba(255,255,255,0.07)', borderRadius: 24, padding: 16, border: '1px solid rgba(255,255,255,0.08)' }}>
+        <div style={{ maxWidth: 320, margin: '0 auto', background: 'rgba(255,255,255,0.07)', borderRadius: 24, padding: 16, border: '1px solid rgba(255,255,255,0.08)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
             <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'linear-gradient(135deg,#e8539c,#f27db8)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Heart size={13} fill="white" style={{ color: 'white' }} />
@@ -160,30 +170,11 @@ export default function SalesPage() {
             </div>
             <Smartphone size={13} style={{ color: 'rgba(255,255,255,0.25)' }} />
           </div>
-          <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: 16, padding: 12, marginBottom: 10 }}>
-            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 10, marginBottom: 2 }}>Frecuencia Matutina</p>
-            <p style={{ color: 'white', fontSize: 12, fontWeight: 500, marginBottom: 10 }}>Amor Propio — Mañana</p>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'linear-gradient(135deg,#e8539c,#f27db8)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <svg viewBox="0 0 20 20" fill="white" style={{ width: 14, height: 14, marginLeft: 2 }}><path d="M6 4l10 6-10 6V4z"/></svg>
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ height: 6, background: 'rgba(255,255,255,0.1)', borderRadius: 999 }}>
-                  <div style={{ height: '100%', width: '40%', background: 'linear-gradient(90deg,#e8539c,#f27db8)', borderRadius: 999 }} />
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 3 }}>
-                  <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: 9 }}>2:14</span>
-                  <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: 9 }}>5:30</span>
-                </div>
-              </div>
-            </div>
+          <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: 16, padding: 12, marginBottom: 12 }}>
+            <AudioPlayer track={SAMPLE_TRACK} dark />
           </div>
-          <div style={{ display: 'flex', gap: 4 }}>
-            {[1,2,3,4,5,6,7].map(d => (
-              <div key={d} style={{ flex: 1, height: 5, borderRadius: 999, background: d <= 7 ? 'linear-gradient(90deg,#e8539c,#f27db8)' : 'rgba(255,255,255,0.08)' }} />
-            ))}
-          </div>
-          <p style={{ color: 'rgba(255,255,255,0.25)', fontSize: 9, textAlign: 'right', marginTop: 4 }}>7 días seguidos ✨</p>
+          <CalendarGrid totalDays={30} completedDays={[1,2,3,4,5,6,7]} currentDay={8} />
+          <p style={{ color: 'rgba(255,255,255,0.25)', fontSize: 9, textAlign: 'right', marginTop: 8 }}>7 días seguidos ✨</p>
         </div>
       </div>
 

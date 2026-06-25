@@ -3,12 +3,20 @@ import React from 'react';
 interface AppLayoutProps {
   children: React.ReactNode;
   className?: string;
+  withBottomNav?: boolean;
 }
 
-export default function AppLayout({ children, className = '' }: AppLayoutProps) {
+export default function AppLayout({ children, className = '', withBottomNav = false }: AppLayoutProps) {
   return (
     <div className="min-h-screen flex items-start justify-center" style={{ background: '#fdf4f8' }}>
-      <div className={`w-full max-w-md min-h-screen relative overflow-x-hidden ${className}`}>
+      <div
+        className={`w-full max-w-md min-h-screen relative overflow-x-hidden ${className}`}
+        style={{
+          maxWidth: '100%',
+          boxSizing: 'border-box',
+          paddingBottom: withBottomNav ? 'calc(56px + env(safe-area-inset-bottom, 0px))' : undefined,
+        }}
+      >
         {children}
       </div>
     </div>

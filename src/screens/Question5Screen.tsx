@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Heart, Shield, Leaf, Sparkles } from 'lucide-react';
 import QuestionCard from '../components/QuestionCard';
 import React from 'react';
@@ -20,14 +20,22 @@ interface Props {
 export default function Question5Screen({ initialValue, onAnswer, soundEnabled, onSoundToggle }: Props) {
   const [selected, setSelected] = useState<string>(initialValue ?? '');
 
+  useEffect(() => {
+    if (selected) {
+      const t = setTimeout(() => onAnswer(selected), 350);
+      return () => clearTimeout(t);
+    }
+  }, [selected, onAnswer]);
+
   return (
     <QuestionCard
-      stepNumber={5} totalSteps={6}
+      stepNumber={5} totalSteps={8}
       question="Si pudieras fortalecer una sola área de tu vida emocional hoy, ¿cuál elegirías?"
       microfeedback="Tu resultado está tomando forma…"
       soundEnabled={soundEnabled} onSoundToggle={onSoundToggle}
       onNext={() => { if (selected) onAnswer(selected); }}
       canNext={!!selected}
+      autoAdvance
     >
       {OPTIONS.map(opt => (
         <button

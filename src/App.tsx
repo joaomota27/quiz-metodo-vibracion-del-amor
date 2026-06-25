@@ -13,6 +13,8 @@ import {
 } from './utils/sound';
 
 import AppLayout from './components/AppLayout';
+import BottomNav from './components/BottomNav';
+import type { NavTab } from './components/BottomNav';
 import WelcomeScreen from './screens/WelcomeScreen';
 import BeforeStartScreen from './screens/BeforeStartScreen';
 import Question1Screen from './screens/Question1Screen';
@@ -63,6 +65,7 @@ export default function App() {
   const [scores, setScores] = useState<Scores>(EMPTY_SCORES);
   const [soundEnabled, setSoundEnabled] = useState<boolean>(stored?.soundEnabled ?? true);
   const [audioUnlocked, setAudioUnlocked] = useState(false);
+  const [navTab, setNavTab] = useState<NavTab>('inicio');
 
   useEffect(() => {
     if (audioUnlocked) unlockAudio();
@@ -164,8 +167,8 @@ export default function App() {
   const sp = { soundEnabled, onSoundToggle: handleSoundToggle };
 
   return (
-    <AppLayout>
-      <div onClick={handleFirstInteraction}>
+    <AppLayout withBottomNav={screen === 'result' || screen === 'vsl' || screen === 'sales'}>
+      <div onClick={handleFirstInteraction} className="safe-top" style={{ width: '100%' }}>
         {screen === 'welcome' && <WelcomeScreen onStart={handleStart} {...sp} />}
         {screen === 'before-start' && <BeforeStartScreen onContinue={handleBeforeStartContinue} {...sp} />}
         {screen === 'question-1' && <Question1Screen initialValue={answers.q1} onAnswer={handleQ1} {...sp} />}
@@ -185,6 +188,10 @@ export default function App() {
         {screen === 'vsl' && <VideoSection onContinue={handleVSLContinue} {...sp} />}
         {screen === 'sales' && <SalesPage />}
       </div>
+
+      {(screen === 'result' || screen === 'vsl' || screen === 'sales') && (
+        <BottomNav active={navTab} onChange={setNavTab} />
+      )}
     </AppLayout>
   );
 }

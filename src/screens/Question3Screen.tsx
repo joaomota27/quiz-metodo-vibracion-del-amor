@@ -15,36 +15,14 @@ export default function Question3Screen({ initialValue, onAnswer, soundEnabled, 
 
   return (
     <QuestionCard
-      stepNumber={3} totalSteps={6}
+      stepNumber={3} totalSteps={8}
       question="¿Qué tan conectada te sientes contigo misma hoy?"
       microfeedback="Tu resultado está tomando forma…"
       soundEnabled={soundEnabled} onSoundToggle={onSoundToggle}
       onNext={() => onAnswer(value)}
       canNext={true}
+      nextLabel="Continuar"
     >
-      {/* Illustration */}
-      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
-        <div style={{
-          width: 120, height: 120, borderRadius: '50%', overflow: 'hidden',
-          border: '3px solid #fce8f3',
-          boxShadow: '0 4px 20px rgba(232,83,156,0.15)',
-          background: 'linear-gradient(135deg,#fce8f3,#fbd1e9)',
-        }}>
-          <svg viewBox="0 0 120 120" fill="none" style={{ width: '100%', height: '100%' }}>
-            <ellipse cx="60" cy="105" rx="26" ry="18" fill="#f8d4e8" opacity="0.5"/>
-            <circle cx="60" cy="50" r="22" fill="#f9c8d4"/>
-            <ellipse cx="60" cy="38" rx="24" ry="13" fill="#7b3a6e"/>
-            <ellipse cx="42" cy="56" rx="7" ry="16" fill="#7b3a6e"/>
-            <ellipse cx="78" cy="56" rx="7" ry="16" fill="#7b3a6e"/>
-            <ellipse cx="53" cy="50" rx="2.5" ry="3" fill="#4a2040"/>
-            <ellipse cx="67" cy="50" rx="2.5" ry="3" fill="#4a2040"/>
-            <path d="M53 59 Q60 65 67 59" stroke="#c47b8a" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
-            <path d="M38 76 Q30 88 34 96" stroke="#f9c8d4" strokeWidth="5" strokeLinecap="round" fill="none"/>
-            <path d="M82 76 Q90 88 86 96" stroke="#f9c8d4" strokeWidth="5" strokeLinecap="round" fill="none"/>
-          </svg>
-        </div>
-      </div>
-
       {/* Dot slider */}
       <div style={{ padding: '0 8px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#9ca3af', marginBottom: 12 }}>

@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Play } from 'lucide-react';
 import { VSL_VIDEO_URL } from '../constants';
 import CTAButton from '../components/CTAButton';
 import SoundToggle from '../components/SoundToggle';
+import { trackEvent } from '../tracking';
 
 interface Props {
   onContinue: () => void;
@@ -13,11 +14,87 @@ interface Props {
 export default function VideoSection({ onContinue, soundEnabled, onSoundToggle }: Props) {
   const [showCTA, setShowCTA] = useState(false);
   const [videoStarted, setVideoStarted] = useState(false);
+  const playerRef = useRef<any>(null);
+  const milestonesRef = useRef<Set<number>>(new Set());
+
+  // ViewVSL on mount
+  useEffect(() => {
+    trackEvent('ViewVSL', undefined, true);
+  }, []);
 
   useEffect(() => {
     const t = setTimeout(() => setShowCTA(true), 8000);
     return () => clearTimeout(t);
   }, []);
+
+  // Load YouTube IFrame API and track progress
+  function startVideo() {
+    setVideoStarted(true);
+    trackEvent('VSLPlay', undefined, true);
+
+    // Load YT API if not loaded
+    if (!(window as any).YT) {
+      const tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      document.body.appendChild(tag);
+    }
+
+    // Wait for API ready, then create player
+    const tryCreate = () => {
+      if ((window as any).YT && (window as any).YT.Player) {
+        createPlayer();
+      } else {
+        setTimeout(tryCreate, 200);
+      }
+    };
+    setTimeout(tryCreate, 300);
+  }
+
+  function createPlayer() {
+    const videoId = extractYouTubeId(VSL_VIDEO_URL);
+    if (!videoId) return;
+
+    playerRef.current = new (window as any).YT.Player('vsl-yt-player', {
+      videoId,
+      events: {
+        onReady: (e: any) => e.target.playVideo(),
+        onStateChange: (e: any) => {
+          // Poll progress when playing
+          if (e.data === 1) {
+            startProgressPolling();
+          }
+        },
+      },
+    });
+  }
+
+  function startProgressPolling() {
+    const interval = setInterval(() => {
+      const p = playerRef.current;
+      if (!p || !p.getCurrentTime || !p.getDuration) return;
+      const cur = p.getCurrentTime();
+      const dur = p.getDuration();
+      if (!dur) return;
+      const pct = (cur / dur) * 100;
+      checkMilestone(pct, 25, 'VSL25');
+      checkMilestone(pct, 50, 'VSL50');
+      checkMilestone(pct, 75, 'VSL75');
+      checkMilestone(pct, 95, 'VSL95');
+      if (pct >= 95) clearInterval(interval);
+    }, 1000);
+  }
+
+  function checkMilestone(pct: number, threshold: number, eventName: string) {
+    if (pct >= threshold && !milestonesRef.current.has(threshold)) {
+      milestonesRef.current.add(threshold);
+      trackEvent(eventName, undefined, true);
+    }
+  }
+
+  function extractYouTubeId(url: string): string | null {
+    const m = url.match(/(?:embed\/|v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    return m ? m[1] : null;
+  }
 
   return (
     <div className="anim-fade-in" style={{
@@ -60,7 +137,7 @@ export default function VideoSection({ onContinue, soundEnabled, onSoundToggle }
               <div style={{ position: 'absolute', inset: 0, background: 'rgba(26,12,31,0.5)' }} />
               <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
                 <button
-                  onClick={() => setVideoStarted(true)}
+                  onClick={startVideo}
                   style={{
                     width: 64, height: 64, borderRadius: '50%', cursor: 'pointer', border: 'none',
                     background: 'linear-gradient(135deg,#e8539c,#f27db8)',
@@ -76,13 +153,7 @@ export default function VideoSection({ onContinue, soundEnabled, onSoundToggle }
             </div>
           ) : (
             <div style={{ position: 'relative', paddingBottom: '56.25%' }}>
-              <iframe
-                src={`${VSL_VIDEO_URL}?autoplay=1&rel=0`}
-                title="Método Vibración del Amor™"
-                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
+              <div id="vsl-yt-player" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} />
             </div>
           )}
         </div>

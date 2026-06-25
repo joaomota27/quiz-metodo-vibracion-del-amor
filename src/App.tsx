@@ -11,6 +11,7 @@ import {
   vibrateMedium,
   vibrateSpecial,
 } from './utils/sound';
+import { initTracking, trackEvent, trackPageView, appendTrackingToUrl } from './tracking';
 
 import AppLayout from './components/AppLayout';
 import BottomNav from './components/BottomNav';
@@ -71,6 +72,16 @@ export default function App() {
     if (audioUnlocked) unlockAudio();
   }, [audioUnlocked]);
 
+  // Init tracking on mount
+  useEffect(() => {
+    initTracking();
+  }, []);
+
+  // PageView on screen change
+  useEffect(() => {
+    trackPageView();
+  }, [screen]);
+
   function handleFirstInteraction() {
     if (!audioUnlocked) {
       setAudioUnlocked(true);
@@ -105,6 +116,7 @@ export default function App() {
   function handleBeforeStartContinue() {
     handleFirstInteraction();
     sound(playTransitionSound);
+    trackEvent('QuizStarted', undefined, true);
     const next: Screen = 'question-1';
     persist(next, answers);
     setScreen(next);
@@ -112,36 +124,45 @@ export default function App() {
 
   function handleQ1(val: string) {
     sound(playSelectSound); vibrateShort();
+    trackEvent('QuizQuestionAnswered', { question_number: 1 });
     const a = { ...answers, q1: val };
     setAnswers(a); persist('question-2', a); setScreen('question-2');
   }
 
   function handleQ2(val: string) {
     sound(playSelectSound); vibrateShort();
+    trackEvent('QuizQuestionAnswered', { question_number: 2 });
     const a = { ...answers, q2: val };
     setAnswers(a); persist('question-3', a); setScreen('question-3');
   }
 
   function handleQ3(val: number) {
     sound(playSelectSound); vibrateShort();
+    trackEvent('QuizQuestionAnswered', { question_number: 3 });
     const a = { ...answers, q3: val };
     setAnswers(a); persist('question-4', a); setScreen('question-4');
   }
 
   function handleQ4(val: string) {
     sound(playSelectSound); vibrateShort();
+    trackEvent('QuizQuestionAnswered', { question_number: 4 });
     const a = { ...answers, q4: val };
     setAnswers(a); persist('question-5', a); setScreen('question-5');
   }
 
   function handleQ5(val: string) {
     sound(playSelectSound); vibrateShort();
+    trackEvent('QuizQuestionAnswered', { question_number: 5 });
     const a = { ...answers, q5: val };
     setAnswers(a); persist('quick-questions', a); setScreen('quick-questions');
   }
 
   function handleQuickQuestions(vals: { q6: string; q7: string; q8: string }) {
     sound(playCompleteSound); vibrateMedium();
+    trackEvent('QuizQuestionAnswered', { question_number: 6 });
+    trackEvent('QuizQuestionAnswered', { question_number: 7 });
+    trackEvent('QuizQuestionAnswered', { question_number: 8 });
+    trackEvent('QuizCompleted', undefined, true);
     const a = { ...answers, ...vals };
     setAnswers(a); persist('processing', a); setScreen('processing');
   }
@@ -156,11 +177,13 @@ export default function App() {
 
   function handleResultContinue() {
     sound(playTransitionSound);
+    trackEvent('ViewResult', undefined, true);
     persist('vsl', answers); setScreen('vsl');
   }
 
   function handleVSLContinue() {
     sound(playTransitionSound);
+    trackEvent('InitiateCheckout', undefined, true);
     persist('sales', answers); setScreen('sales');
   }
 

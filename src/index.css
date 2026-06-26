@@ -425,13 +425,19 @@
 
 .calendar-grid {
   display: grid;
+  grid-template-columns: repeat(5, 1fr);
   gap: 6px;
   max-width: 100%;
   box-sizing: border-box;
 }
-.calendar-grid-mobile  { grid-template-columns: repeat(5, 1fr); }
-.calendar-grid-tablet  { grid-template-columns: repeat(6, 1fr); }
-.calendar-grid-desktop { grid-template-columns: repeat(7, 1fr); }
+
+@media (min-width: 640px) {
+  .calendar-grid { grid-template-columns: repeat(6, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .calendar-grid { grid-template-columns: repeat(7, 1fr); }
+}
 
 .calendar-day {
   aspect-ratio: 1;

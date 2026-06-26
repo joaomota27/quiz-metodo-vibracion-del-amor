@@ -16,20 +16,9 @@ export default function CalendarGrid({
   const days = Array.from({ length: totalDays }, (_, i) => i + 1);
 
   return (
-    <>
-      {/* Mobile: 5 cols */}
-      <div className="calendar-grid calendar-grid-mobile sm:hidden">
-        {days.map(d => <DayCell key={d} day={d} completed={completedDays.includes(d)} current={d === currentDay} onClick={onDayClick} />)}
-      </div>
-      {/* Tablet: 6 cols */}
-      <div className="calendar-grid calendar-grid-tablet hidden sm:grid lg:hidden">
-        {days.map(d => <DayCell key={d} day={d} completed={completedDays.includes(d)} current={d === currentDay} onClick={onDayClick} />)}
-      </div>
-      {/* Desktop: 7 cols */}
-      <div className="calendar-grid calendar-grid-desktop hidden lg:grid">
-        {days.map(d => <DayCell key={d} day={d} completed={completedDays.includes(d)} current={d === currentDay} onClick={onDayClick} />)}
-      </div>
-    </>
+    <div className="calendar-grid">
+      {days.map(d => <DayCell key={d} day={d} completed={completedDays.includes(d)} current={d === currentDay} onClick={onDayClick} />)}
+    </div>
   );
 }
 

@@ -87,9 +87,21 @@ export function playAmbientTick(): void {
 
 export function unlockAudio(): void {
   const ctx = getCtx();
-  if (ctx && ctx.state === 'suspended') {
+  if (!ctx) return;
+
+  if (ctx.state === 'suspended') {
     ctx.resume().catch(() => {});
   }
+
+  // iOS Safari silent buffer trick — primes the audio pipeline on first gesture
+  try {
+    const buf = ctx.createBuffer(1, 1, 22050);
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    src.connect(ctx.destination);
+    src.start(0);
+    src.disconnect();
+  } catch {}
 }
 
 export function vibrateShort(): void {

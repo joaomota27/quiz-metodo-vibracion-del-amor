@@ -1,12 +1,10 @@
 import { useState, useCallback, useEffect } from 'react';
 
-  const removeFloating = () => {
-  document.querySelectorAll('[style="position: fixed"][style="bottom: 1rem"][style="right: 1rem"][style="z-index: 2147483647"]').forEach(el => el.remove());};
+const removeFloating = () => {
+  document.querySelectorAll('[style="position: fixed"][style="bottom: 1rem"][style="right: 1rem"][style="z-index: 2147483647"]').forEach(el => el.remove());
+};
 
-// executa já no load
 removeFloating();
-
-// observa mudanças no DOM
 
 const observer = new MutationObserver(removeFloating);
 observer.observe(document.body, { childList: true, subtree: true });
@@ -23,11 +21,10 @@ import {
   vibrateMedium,
   vibrateSpecial,
 } from './utils/sound';
-import { initTracking, trackEvent, trackPageView, appendTrackingToUrl } from './tracking';
+import { initTracking, trackEvent, trackPageView } from './tracking';
+import { saveAnalyticsEvent } from './utils/analytics';
 
 import AppLayout from './components/AppLayout';
-import BottomNav from './components/BottomNav';
-import type { NavTab } from './components/BottomNav';
 import WelcomeScreen from './screens/WelcomeScreen';
 import BeforeStartScreen from './screens/BeforeStartScreen';
 import Question1Screen from './screens/Question1Screen';
@@ -62,9 +59,7 @@ function loadState(): StoredState | null {
 function saveState(state: StoredState) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  } catch {
-    // ignore
-  }
+  } catch {}
 }
 
 const EMPTY_ANSWERS: QuizAnswers = {};
@@ -78,20 +73,35 @@ export default function App() {
   const [scores, setScores] = useState<Scores>(EMPTY_SCORES);
   const [soundEnabled, setSoundEnabled] = useState<boolean>(stored?.soundEnabled ?? true);
   const [audioUnlocked, setAudioUnlocked] = useState(false);
-  const [navTab, setNavTab] = useState<NavTab>('inicio');
+
+  // Global audio unlock on any user gesture
+  useEffect(() => {
+    const unlock = () => {
+      if (!audioUnlocked) {
+        setAudioUnlocked(true);
+        unlockAudio();
+      }
+    };
+    document.addEventListener('touchstart', unlock, { once: true, passive: true });
+    document.addEventListener('click', unlock, { once: true });
+    return () => {
+      document.removeEventListener('touchstart', unlock);
+      document.removeEventListener('click', unlock);
+    };
+  }, [audioUnlocked]);
 
   useEffect(() => {
     if (audioUnlocked) unlockAudio();
   }, [audioUnlocked]);
 
-  // Init tracking on mount
   useEffect(() => {
     initTracking();
+    saveAnalyticsEvent('PageView', 'welcome');
   }, []);
 
-  // PageView on screen change
   useEffect(() => {
     trackPageView();
+    saveAnalyticsEvent('ScreenView', screen);
   }, [screen]);
 
   function handleFirstInteraction() {
@@ -120,6 +130,7 @@ export default function App() {
     handleFirstInteraction();
     sound(playClickSound);
     vibrateShort();
+    saveAnalyticsEvent('QuizStart', 'welcome');
     const next: Screen = 'before-start';
     persist(next, answers);
     setScreen(next);
@@ -129,6 +140,7 @@ export default function App() {
     handleFirstInteraction();
     sound(playTransitionSound);
     trackEvent('QuizStarted', undefined, true);
+    saveAnalyticsEvent('QuizStarted', 'before-start');
     const next: Screen = 'question-1';
     persist(next, answers);
     setScreen(next);
@@ -137,6 +149,7 @@ export default function App() {
   function handleQ1(val: string) {
     sound(playSelectSound); vibrateShort();
     trackEvent('QuizQuestionAnswered', { question_number: 1 });
+    saveAnalyticsEvent('QuestionAnswered', 'question-1');
     const a = { ...answers, q1: val };
     setAnswers(a); persist('question-2', a); setScreen('question-2');
   }
@@ -144,6 +157,7 @@ export default function App() {
   function handleQ2(val: string) {
     sound(playSelectSound); vibrateShort();
     trackEvent('QuizQuestionAnswered', { question_number: 2 });
+    saveAnalyticsEvent('QuestionAnswered', 'question-2');
     const a = { ...answers, q2: val };
     setAnswers(a); persist('question-3', a); setScreen('question-3');
   }
@@ -151,6 +165,7 @@ export default function App() {
   function handleQ3(val: number) {
     sound(playSelectSound); vibrateShort();
     trackEvent('QuizQuestionAnswered', { question_number: 3 });
+    saveAnalyticsEvent('QuestionAnswered', 'question-3');
     const a = { ...answers, q3: val };
     setAnswers(a); persist('question-4', a); setScreen('question-4');
   }
@@ -158,6 +173,7 @@ export default function App() {
   function handleQ4(val: string) {
     sound(playSelectSound); vibrateShort();
     trackEvent('QuizQuestionAnswered', { question_number: 4 });
+    saveAnalyticsEvent('QuestionAnswered', 'question-4');
     const a = { ...answers, q4: val };
     setAnswers(a); persist('question-5', a); setScreen('question-5');
   }
@@ -165,6 +181,7 @@ export default function App() {
   function handleQ5(val: string) {
     sound(playSelectSound); vibrateShort();
     trackEvent('QuizQuestionAnswered', { question_number: 5 });
+    saveAnalyticsEvent('QuestionAnswered', 'question-5');
     const a = { ...answers, q5: val };
     setAnswers(a); persist('quick-questions', a); setScreen('quick-questions');
   }
@@ -175,6 +192,7 @@ export default function App() {
     trackEvent('QuizQuestionAnswered', { question_number: 7 });
     trackEvent('QuizQuestionAnswered', { question_number: 8 });
     trackEvent('QuizCompleted', undefined, true);
+    saveAnalyticsEvent('QuizCompleted', 'quick-questions');
     const a = { ...answers, ...vals };
     setAnswers(a); persist('processing', a); setScreen('processing');
   }
@@ -190,19 +208,21 @@ export default function App() {
   function handleResultContinue() {
     sound(playTransitionSound);
     trackEvent('ViewResult', undefined, true);
+    saveAnalyticsEvent('ViewResult', 'result');
     persist('vsl', answers); setScreen('vsl');
   }
 
   function handleVSLContinue() {
     sound(playTransitionSound);
     trackEvent('InitiateCheckout', undefined, true);
+    saveAnalyticsEvent('InitiateCheckout', 'vsl');
     persist('sales', answers); setScreen('sales');
   }
 
   const sp = { soundEnabled, onSoundToggle: handleSoundToggle };
 
   return (
-    <AppLayout withBottomNav={screen === 'result' || screen === 'vsl' || screen === 'sales'}>
+    <AppLayout>
       <div onClick={handleFirstInteraction} style={{ width: '100%' }}>
         {screen === 'welcome' && <WelcomeScreen onStart={handleStart} {...sp} />}
         {screen === 'before-start' && <BeforeStartScreen onContinue={handleBeforeStartContinue} {...sp} />}
@@ -223,10 +243,6 @@ export default function App() {
         {screen === 'vsl' && <VideoSection onContinue={handleVSLContinue} {...sp} />}
         {screen === 'sales' && <SalesPage />}
       </div>
-
-      {(screen === 'result' || screen === 'vsl' || screen === 'sales') && (
-        <BottomNav active={navTab} onChange={setNavTab} />
-      )}
     </AppLayout>
   );
 }

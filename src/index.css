@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Hide Bolt watermark ─────────────────────────────────── */
+[data-bolt-badge],
+.bolt-badge,
+a[href*="bolt.new"],
+button[aria-label*="Bolt"] {
+  display: none !important;
+}
+
 @layer base {
   * {
     -webkit-tap-highlight-color: transparent;
@@ -21,10 +29,27 @@
     background: #fdf4f8;
     overscroll-behavior: none;
     width: 100%;
+    font-size: clamp(14px, 3.5vw, 16px);
   }
 
-  h1, h2, h3 {
+  h1 {
     font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(22px, 6vw, 32px);
+  }
+
+  h2 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(18px, 5vw, 26px);
+  }
+
+  h3 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(16px, 4vw, 22px);
+  }
+
+  /* Minimum 44×44 touch targets */
+  button, a, [role="button"] {
+    min-height: 44px;
   }
 
   /* Safe area insets for iPhone notch / Dynamic Island */

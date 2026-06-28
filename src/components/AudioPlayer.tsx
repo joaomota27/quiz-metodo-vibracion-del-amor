@@ -110,7 +110,7 @@ export default function AudioPlayer({ track, onEnded, dark = true }: Props) {
 
   return (
     <div className="audio-player" style={{ color: textColor }}>
-      <audio ref={audioRef} src={track.src} preload="metadata" playsInline />
+      <audio ref={audioRef} src={track.src} preload="auto" playsInline webkit-playsinline="true" x-webkit-airplay="deny" />
 
       {/* Top row: cover + info + play */}
       <div className="audio-player-top">

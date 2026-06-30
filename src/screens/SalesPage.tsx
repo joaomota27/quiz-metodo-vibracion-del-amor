@@ -71,8 +71,49 @@ const SAMPLE_TRACK: AudioTrack = {
 };
 
 export default function SalesPage() {
+  React.useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+    const previousHtmlOverflowX = html.style.overflowX;
+    const previousHtmlWidth = html.style.width;
+    const previousBodyOverflowX = body.style.overflowX;
+    const previousBodyWidth = body.style.width;
+
+    html.style.overflowX = 'hidden';
+    html.style.width = '100%';
+    body.style.overflowX = 'hidden';
+    body.style.width = '100%';
+
+    return () => {
+      html.style.overflowX = previousHtmlOverflowX;
+      html.style.width = previousHtmlWidth;
+      body.style.overflowX = previousBodyOverflowX;
+      body.style.width = previousBodyWidth;
+    };
+  }, []);
+
   return (
-    <div className="scrollbar-hide" style={{ minHeight: '100vh', overflowY: 'auto', background: 'white' }}>
+    <div
+      className="sales-page scrollbar-hide"
+      style={{
+        minHeight: '100vh',
+        height: '100vh',
+        overflowY: 'auto',
+        overflowX: 'hidden',
+        WebkitOverflowScrolling: 'touch',
+        overscrollBehaviorY: 'contain',
+        background: 'white',
+      }}
+    >
+      <style>
+        {`
+          .sales-page,
+          .sales-page * {
+            max-width: 100%;
+            box-sizing: border-box;
+          }
+        `}
+      </style>
 
       {/* HERO */}
       <div style={{ ...S.sectionDark, textAlign: 'center', position: 'relative', overflow: 'hidden' }}>

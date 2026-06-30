@@ -7,6 +7,9 @@ import { playResultSound } from '../utils/sound';
 
 interface BarProps { label: string; emoji: string; value: number; color: string; delay: number; }
 
+const RESULT_BODY_FONT = 'clamp(14px, 4vw, 18px)';
+const RESULT_TITLE_FONT = 'clamp(18px, 5vw, 28px)';
+
 function DimensionBar({ label, emoji, value, color, delay }: BarProps) {
   const [displayed, setDisplayed] = useState(0);
   const [barWidth, setBarWidth] = useState(0);
@@ -36,9 +39,9 @@ function DimensionBar({ label, emoji, value, color, delay }: BarProps) {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontSize: 16 }}>{emoji}</span>
-          <span style={{ fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.88)' }}>{label}</span>
+          <span style={{ fontSize: RESULT_BODY_FONT, fontWeight: 500, color: 'rgba(255,255,255,0.88)' }}>{label}</span>
         </div>
-        <span style={{ fontSize: 13, fontWeight: 600, color: 'white' }}>{displayed}%</span>
+        <span style={{ fontSize: RESULT_BODY_FONT, fontWeight: 600, color: 'white' }}>{displayed}%</span>
       </div>
       <div style={{ height: 10, background: 'rgba(255,255,255,0.1)', borderRadius: 999, overflow: 'hidden' }}>
         <div style={{
@@ -66,6 +69,27 @@ export default function ResultScreen({ scores, onContinue, soundEnabled, onSound
     if (soundEnabled) setTimeout(() => playResultSound(), 700);
   }, [soundEnabled]);
 
+  useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+    const previousHtmlOverflowX = html.style.overflowX;
+    const previousHtmlWidth = html.style.width;
+    const previousBodyOverflowX = body.style.overflowX;
+    const previousBodyWidth = body.style.width;
+
+    html.style.overflowX = 'hidden';
+    html.style.width = '100%';
+    body.style.overflowX = 'hidden';
+    body.style.width = '100%';
+
+    return () => {
+      html.style.overflowX = previousHtmlOverflowX;
+      html.style.width = previousHtmlWidth;
+      body.style.overflowX = previousBodyOverflowX;
+      body.style.width = previousBodyWidth;
+    };
+  }, []);
+
   const dims = [
     { key: 'amorPropio',        label: 'Amor Propio',       emoji: '💗', value: scores.amorPropio,        color: 'linear-gradient(90deg,#e8539c,#f27db8)', delay: 200 },
     { key: 'confianza',         label: 'Confianza',         emoji: '🌸', value: scores.confianza,         color: 'linear-gradient(90deg,#c47b8a,#e8539c)', delay: 600 },
@@ -74,15 +98,28 @@ export default function ResultScreen({ scores, onContinue, soundEnabled, onSound
   ];
 
   return (
-    <div className="anim-fade-in scrollbar-hide" style={{
-      minHeight: '100vh', overflowY: 'auto',
+    <div className="resultado-page scrollbar-hide" style={{
+      minHeight: '100vh',
+      height: '100vh',
+      overflowY: 'auto',
+      WebkitOverflowScrolling: 'touch',
+      paddingBottom: 100,
       background: 'linear-gradient(180deg,#1a0c1f 0%,#2d1533 40%,#3d1a4e 100%)',
     }}>
+      <style>
+        {`
+          .resultado-page,
+          .resultado-page * {
+            max-width: 100%;
+            box-sizing: border-box;
+          }
+        `}
+      </style>
       <div style={{ display: 'flex', justifyContent: 'flex-end', padding: 16 }}>
         <SoundToggle enabled={soundEnabled} onToggle={onSoundToggle} dark />
       </div>
 
-      <div style={{ padding: '0 20px 40px' }}>
+      <div style={{ padding: '0 20px 140px' }}>
         {/* Title */}
         <div className="anim-fade-up" style={{ textAlign: 'center', marginBottom: 24 }}>
           <div className="anim-scale-in delay-200" style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
@@ -98,7 +135,7 @@ export default function ResultScreen({ scores, onContinue, soundEnabled, onSound
           </div>
           <h1 style={{
             fontFamily: "'Playfair Display',Georgia,serif",
-            fontSize: 22, color: 'white', lineHeight: 1.3,
+            fontSize: RESULT_TITLE_FONT, color: 'white', lineHeight: 1.3,
           }}>
             Tu Evaluación Oficial de<br/>
             <span style={{ color: '#f27db8' }}>Vibración Emocional™</span>
@@ -107,26 +144,26 @@ export default function ResultScreen({ scores, onContinue, soundEnabled, onSound
         </div>
 
         {/* Intro text */}
-        <p className="anim-fade-up delay-300" style={{ color: 'rgba(255,255,255,0.58)', fontSize: 13, textAlign: 'center', marginBottom: 24, lineHeight: 1.6 }}>
+        <p className="anim-fade-up delay-300" style={{ color: 'rgba(255,255,255,0.58)', fontSize: RESULT_BODY_FONT, textAlign: 'center', marginBottom: 24, lineHeight: 1.6 }}>
           Tus respuestas muestran que hoy existen áreas emocionales con gran potencial de fortalecimiento.
           También identificamos algunos patrones que podrían estar influyendo en tu confianza, tu paz interior y tu apertura al amor.
         </p>
 
         {/* Bars */}
-        <div className="glass-dark anim-fade-up delay-400" style={{ borderRadius: 24, padding: 20, marginBottom: 20 }}>
+        <div className="glass-dark anim-fade-up delay-400" style={{ width: '90%', margin: '0 auto 20px', borderRadius: 24, padding: 20 }}>
           {dims.map(d => <DimensionBar key={d.key} {...d} />)}
         </div>
 
         {/* Personalized text */}
         <div className="glass-dark anim-fade-up delay-500" style={{ borderRadius: 24, padding: 16, marginBottom: 20 }}>
-          <p style={{ color: 'rgba(255,255,255,0.68)', fontSize: 13, lineHeight: 1.6, textAlign: 'center' }}>
+          <p style={{ color: 'rgba(255,255,255,0.68)', fontSize: RESULT_BODY_FONT, lineHeight: 1.6, textAlign: 'center' }}>
             {personalizedText}
           </p>
         </div>
 
         {/* Isabella card */}
         <div className="anim-fade-up delay-600" style={{
-          borderRadius: 24, overflow: 'hidden', marginBottom: 24,
+          width: '100%', maxWidth: '100%', borderRadius: 24, overflow: 'hidden', marginBottom: 24,
           background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
         }}>
           <div style={{
@@ -135,25 +172,33 @@ export default function ResultScreen({ scores, onContinue, soundEnabled, onSound
             backgroundSize: 'cover', backgroundPosition: 'center top',
           }} />
           <div style={{ padding: 16 }}>
-            <p style={{ color: 'white', fontWeight: 600, fontSize: 14, marginBottom: 2 }}>Isabella Morales</p>
-            <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12, marginBottom: 12 }}>Especialista en bienestar emocional femenino</p>
-            <p style={{ color: 'rgba(255,255,255,0.68)', fontSize: 13, fontStyle: 'italic', marginBottom: 6 }}>
+            <p style={{ color: 'white', fontWeight: 600, fontSize: RESULT_BODY_FONT, marginBottom: 2 }}>Isabella Morales</p>
+            <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: RESULT_BODY_FONT, marginBottom: 12 }}>Especialista en bienestar emocional femenino</p>
+            <p style={{ color: 'rgba(255,255,255,0.68)', fontSize: RESULT_BODY_FONT, fontStyle: 'italic', marginBottom: 6 }}>
               "Lo más importante no son estos porcentajes..."
             </p>
-            <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 12, lineHeight: 1.6, marginBottom: 6 }}>
+            <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: RESULT_BODY_FONT, lineHeight: 1.6, marginBottom: 6 }}>
               Lo verdaderamente importante es comprender por qué obtuviste este resultado y cómo puedes fortalecer estas áreas de forma sencilla, dedicando solo unos minutos al día.
             </p>
-            <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 12 }}>
+            <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: RESULT_BODY_FONT }}>
               En el siguiente video voy a explicarte cómo funciona este proceso.
             </p>
           </div>
         </div>
 
-        <div className="anim-fade-up delay-800">
+        <div style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: 999,
+          padding: '12px 20px calc(env(safe-area-inset-bottom, 0px) + 12px)',
+          background: 'linear-gradient(180deg,rgba(45,21,51,0),rgba(45,21,51,0.96) 22%,#2d1533 100%)',
+        }}>
           <CTAButton onClick={onContinue} pulse>
             Ver mi explicación personalizada
           </CTAButton>
-          <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.28)', fontSize: 11, marginTop: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+          <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.28)', fontSize: RESULT_BODY_FONT, marginTop: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
             <svg viewBox="0 0 16 16" fill="currentColor" style={{ width: 12, height: 12 }}>
               <path d="M8 1a7 7 0 100 14A7 7 0 008 1zm1 9.5H7v-5h2v5zm0-6H7V6h2v-1.5z"/>
             </svg>

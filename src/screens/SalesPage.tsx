@@ -136,12 +136,12 @@ export default function SalesPage() {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 4 }}>
             <span style={{ fontSize: 22, color: 'rgba(255,255,255,0.35)', fontWeight: 400, textDecoration: 'line-through' }}>US$97</span>
-            <span style={{ background: '#e8539c', color: 'white', fontSize: 11, fontWeight: 700, borderRadius: 6, padding: '2px 7px' }}>72% OFF</span>
+            <span style={{ background: '#e8539c', color: 'white', fontSize: 11, fontWeight: 700, borderRadius: 6, padding: '2px 7px' }}>84% OFF</span>
           </div>
-          <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: 52, color: 'white', fontWeight: 700, lineHeight: 1 }}>US$27</p>
+          <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: 52, color: 'white', fontWeight: 700, lineHeight: 1 }}>US$15,90</p>
           <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11, marginTop: 4 }}>Pago único · Sin mensualidades</p>
         </div>
-        <CTAButton onClick={goToCheckout} pulse showArrow>Comenzar ahora por US$27</CTAButton>
+        <CTAButton onClick={goToCheckout} pulse showArrow>Comenzar ahora por US$15,90</CTAButton>
         <div style={{ display: 'flex', justifyContent: 'center', gap: 16, marginTop: 14, flexWrap: 'wrap' }}>
           {['Acceso inmediato', 'Sin mensualidades', '100% digital'].map((t, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -258,10 +258,10 @@ export default function SalesPage() {
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 2 }}>
               <span style={{ fontSize: 20, color: 'rgba(255,255,255,0.32)', fontWeight: 400, textDecoration: 'line-through' }}>US$97</span>
-              <span style={{ background: 'linear-gradient(135deg,#e8539c,#f27db8)', color: 'white', fontSize: 11, fontWeight: 700, borderRadius: 6, padding: '2px 8px' }}>72% OFF</span>
+              <span style={{ background: 'linear-gradient(135deg,#e8539c,#f27db8)', color: 'white', fontSize: 11, fontWeight: 700, borderRadius: 6, padding: '2px 8px' }}>84% OFF</span>
             </div>
           </div>
-          <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: 56, color: 'white', fontWeight: 700, marginBottom: 4, lineHeight: 1 }}>US$27</p>
+          <p style={{ fontFamily: "'Playfair Display',Georgia,serif", fontSize: 56, color: 'white', fontWeight: 700, marginBottom: 4, lineHeight: 1 }}>US$15,90</p>
           <p style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12, marginBottom: 20 }}>Inversión única · Sin mensualidades</p>
           {['Pago único','Acceso inmediato','60 experiencias sonoras','Programa completo de 30 días','Sin mensualidades'].map((t, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
@@ -309,7 +309,7 @@ export default function SalesPage() {
         <CTAButton onClick={goToCheckout} pulse>Sí, quiero comenzar ahora</CTAButton>
         <p style={{ color: '#9ca3af', fontSize: 11, marginTop: 10 }}>
           <span style={{ textDecoration: 'line-through', color: '#d1d5db', marginRight: 6 }}>US$97</span>
-          Hoy solo US$27 · Acceso inmediato
+          Hoy solo US$15,90 · Acceso inmediato
         </p>
       </div>
 

@@ -27,10 +27,17 @@ const PARAM_KEYS = ['fbclid', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_c
 
 let pixelLoaded = false;
 
+function getFacebookPixelIds(): string[] {
+  return TRACKING_CONFIG.facebookPixelIds.filter(
+    id => id && !id.startsWith('COLOCAR_PIXEL_')
+  );
+}
+
 function loadPixel(): void {
   if (pixelLoaded) return;
   if (typeof window === 'undefined') return;
-  if (!TRACKING_CONFIG.facebookPixelId || TRACKING_CONFIG.facebookPixelId === 'COLOCAR_PIXEL_AQUI') {
+  const pixelIds = getFacebookPixelIds();
+  if (pixelIds.length === 0) {
     return;
   }
 
@@ -52,7 +59,9 @@ function loadPixel(): void {
     s.parentNode?.insertBefore(t, s);
   })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
 
-  (window as any).fbq('init', TRACKING_CONFIG.facebookPixelId);
+  pixelIds.forEach(pixelId => {
+    (window as any).fbq('init', pixelId);
+  });
   (window as any).fbq('track', 'PageView');
   pixelLoaded = true;
   logDebug('PageView');
@@ -186,7 +195,7 @@ function renderDebugPanel(): void {
 
   panel.innerHTML = `
     <div style="color:#fff;font-weight:bold;margin-bottom:4px">VDA TRACKING DEBUG</div>
-    <div style="color:#aaa">Pixel: <span style="color:#f27db8">${TRACKING_CONFIG.facebookPixelId}</span></div>
+    <div style="color:#aaa">Pixels: <span style="color:#f27db8">${getFacebookPixelIds().join(', ') || '—'}</span></div>
     <div style="color:#aaa">Page: <span style="color:#fff">${typeof window !== 'undefined' ? window.location.pathname : ''}</span></div>
     <div style="color:#aaa">fbclid: <span style="color:#fff">${data.fbclid ?? '—'}</span></div>
     <div style="color:#aaa">utm_source: <span style="color:#fff">${data.utm_source ?? '—'}</span></div>

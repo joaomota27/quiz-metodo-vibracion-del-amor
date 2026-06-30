@@ -96,12 +96,8 @@ export default function SalesPage() {
     <div
       className="sales-page scrollbar-hide"
       style={{
-        minHeight: '100vh',
-        height: '100vh',
-        overflowY: 'auto',
+        minHeight: '100dvh',
         overflowX: 'hidden',
-        WebkitOverflowScrolling: 'touch',
-        overscrollBehaviorY: 'contain',
         background: 'white',
       }}
     >

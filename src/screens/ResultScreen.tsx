@@ -99,11 +99,8 @@ export default function ResultScreen({ scores, onContinue, soundEnabled, onSound
 
   return (
     <div className="resultado-page scrollbar-hide" style={{
-      minHeight: '100vh',
-      height: '100vh',
-      overflowY: 'auto',
-      WebkitOverflowScrolling: 'touch',
-      paddingBottom: 100,
+      minHeight: '100dvh',
+      overflowX: 'hidden',
       background: 'linear-gradient(180deg,#1a0c1f 0%,#2d1533 40%,#3d1a4e 100%)',
     }}>
       <style>

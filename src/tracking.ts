@@ -22,6 +22,25 @@ interface DebugEvent {
 const STORAGE_KEY = 'vda_tracking_data';
 const DEBUG_KEY = 'vda_debug_events';
 const PARAM_KEYS = ['fbclid', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'] as const;
+const META_STANDARD_EVENTS = new Set([
+  'AddPaymentInfo',
+  'AddToCart',
+  'AddToWishlist',
+  'CompleteRegistration',
+  'Contact',
+  'CustomizeProduct',
+  'Donate',
+  'FindLocation',
+  'InitiateCheckout',
+  'Lead',
+  'Purchase',
+  'Schedule',
+  'Search',
+  'StartTrial',
+  'SubmitApplication',
+  'Subscribe',
+  'ViewContent',
+]);
 
 // ── Pixel loader (singleton, idempotent) ───────────────────
 
@@ -133,7 +152,7 @@ export function trackEvent(name: string, params?: Record<string, unknown>, uniqu
   if (typeof window === 'undefined') return;
   if (!(window as any).fbq) return;
 
-  (window as any).fbq('trackCustom', name, params ?? {});
+  (window as any).fbq(META_STANDARD_EVENTS.has(name) ? 'track' : 'trackCustom', name, params ?? {});
   logDebug(name, params);
 }
 

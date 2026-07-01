@@ -153,7 +153,7 @@ export default function DashboardScreen() {
   const [events, setEvents] = useState<AnalyticsEvent[]>([]);
 
   useEffect(() => {
-    if (authed) setEvents(getAnalyticsEvents());
+    if (authed) void refresh();
   }, [authed]);
 
   function handleLogin(e: FormEvent) {
@@ -166,13 +166,13 @@ export default function DashboardScreen() {
     }
   }
 
-  function refresh() {
-    setEvents(getAnalyticsEvents());
+  async function refresh() {
+    setEvents(await getAnalyticsEvents());
   }
 
-  function handleClear() {
+  async function handleClear() {
     if (confirm('¿Eliminar todos los datos de analytics?')) {
-      clearAnalyticsEvents();
+      await clearAnalyticsEvents();
       setEvents([]);
     }
   }
@@ -285,7 +285,7 @@ export default function DashboardScreen() {
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <button
-            onClick={refresh}
+            onClick={() => void refresh()}
             style={{
               background: 'rgba(255,255,255,0.08)',
               border: '1px solid rgba(255,255,255,0.1)',
@@ -303,7 +303,7 @@ export default function DashboardScreen() {
             <RefreshCw size={14} />
           </button>
           <button
-            onClick={handleClear}
+            onClick={() => void handleClear()}
             style={{
               background: 'rgba(248,113,113,0.1)',
               border: '1px solid rgba(248,113,113,0.2)',
@@ -427,7 +427,7 @@ export default function DashboardScreen() {
         </Card>
 
         <p style={{ color: 'rgba(255,255,255,0.2)', fontSize: 10, textAlign: 'center', marginTop: 8, marginBottom: 24 }}>
-          Datos almacenados localmente en este navegador · quiz_analytics
+          Datos centralizados de visitantes · quiz_analytics_events
         </p>
       </div>
     </div>

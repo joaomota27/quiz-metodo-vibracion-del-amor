@@ -75,19 +75,37 @@ export default function SalesPage() {
     const html = document.documentElement;
     const body = document.body;
     const previousHtmlOverflowX = html.style.overflowX;
+    const previousHtmlOverflowY = html.style.overflowY;
+    const previousHtmlHeight = html.style.height;
     const previousHtmlWidth = html.style.width;
     const previousBodyOverflowX = body.style.overflowX;
+    const previousBodyOverflowY = body.style.overflowY;
+    const previousBodyHeight = body.style.height;
+    const previousBodyPosition = body.style.position;
+    const previousBodyTouchAction = body.style.touchAction;
     const previousBodyWidth = body.style.width;
 
     html.style.overflowX = 'hidden';
+    html.style.overflowY = 'auto';
+    html.style.height = 'auto';
     html.style.width = '100%';
     body.style.overflowX = 'hidden';
+    body.style.overflowY = 'auto';
+    body.style.height = 'auto';
+    body.style.position = 'static';
+    body.style.touchAction = 'pan-y';
     body.style.width = '100%';
 
     return () => {
       html.style.overflowX = previousHtmlOverflowX;
+      html.style.overflowY = previousHtmlOverflowY;
+      html.style.height = previousHtmlHeight;
       html.style.width = previousHtmlWidth;
       body.style.overflowX = previousBodyOverflowX;
+      body.style.overflowY = previousBodyOverflowY;
+      body.style.height = previousBodyHeight;
+      body.style.position = previousBodyPosition;
+      body.style.touchAction = previousBodyTouchAction;
       body.style.width = previousBodyWidth;
     };
   }, []);
@@ -107,6 +125,12 @@ export default function SalesPage() {
           .sales-page * {
             max-width: 100%;
             box-sizing: border-box;
+          }
+
+          .sales-page {
+            overflow-y: visible !important;
+            touch-action: pan-y;
+            -webkit-overflow-scrolling: touch;
           }
         `}
       </style>

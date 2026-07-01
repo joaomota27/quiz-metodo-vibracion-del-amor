@@ -41,8 +41,6 @@ import SalesPage from './screens/SalesPage';
 const STORAGE_KEY = 'vda_app_state';
 
 interface StoredState {
-  screen: Screen;
-  answers: QuizAnswers;
   soundEnabled: boolean;
 }
 
@@ -68,8 +66,8 @@ const EMPTY_SCORES: Scores = { amorPropio: 0, confianza: 0, pazInterior: 0, aber
 export default function App() {
   const stored = loadState();
 
-  const [screen, setScreen] = useState<Screen>(stored?.screen ?? 'welcome');
-  const [answers, setAnswers] = useState<QuizAnswers>(stored?.answers ?? EMPTY_ANSWERS);
+  const [screen, setScreen] = useState<Screen>('welcome');
+  const [answers, setAnswers] = useState<QuizAnswers>(EMPTY_ANSWERS);
   const [scores, setScores] = useState<Scores>(EMPTY_SCORES);
   const [soundEnabled, setSoundEnabled] = useState<boolean>(stored?.soundEnabled ?? true);
   const [audioUnlocked, setAudioUnlocked] = useState(false);
@@ -116,8 +114,8 @@ export default function App() {
     [soundEnabled, audioUnlocked]
   );
 
-  function persist(newScreen: Screen, newAnswers: QuizAnswers) {
-    saveState({ screen: newScreen, answers: newAnswers, soundEnabled });
+  function persist() {
+    saveState({ soundEnabled });
   }
 
   function handleSoundToggle() {
@@ -132,7 +130,7 @@ export default function App() {
     vibrateShort();
     saveAnalyticsEvent('QuizStart', 'welcome');
     const next: Screen = 'before-start';
-    persist(next, answers);
+    persist();
     setScreen(next);
   }
 
@@ -142,7 +140,7 @@ export default function App() {
     trackEvent('QuizStarted', undefined, true);
     saveAnalyticsEvent('QuizStarted', 'before-start');
     const next: Screen = 'question-1';
-    persist(next, answers);
+    persist();
     setScreen(next);
   }
 
@@ -151,7 +149,7 @@ export default function App() {
     trackEvent('QuizQuestionAnswered', { question_number: 1 });
     saveAnalyticsEvent('QuestionAnswered', 'question-1');
     const a = { ...answers, q1: val };
-    setAnswers(a); persist('question-2', a); setScreen('question-2');
+    setAnswers(a); persist(); setScreen('question-2');
   }
 
   function handleQ2(val: string) {
@@ -159,7 +157,7 @@ export default function App() {
     trackEvent('QuizQuestionAnswered', { question_number: 2 });
     saveAnalyticsEvent('QuestionAnswered', 'question-2');
     const a = { ...answers, q2: val };
-    setAnswers(a); persist('question-3', a); setScreen('question-3');
+    setAnswers(a); persist(); setScreen('question-3');
   }
 
   function handleQ3(val: number) {
@@ -167,7 +165,7 @@ export default function App() {
     trackEvent('QuizQuestionAnswered', { question_number: 3 });
     saveAnalyticsEvent('QuestionAnswered', 'question-3');
     const a = { ...answers, q3: val };
-    setAnswers(a); persist('question-4', a); setScreen('question-4');
+    setAnswers(a); persist(); setScreen('question-4');
   }
 
   function handleQ4(val: string) {
@@ -175,7 +173,7 @@ export default function App() {
     trackEvent('QuizQuestionAnswered', { question_number: 4 });
     saveAnalyticsEvent('QuestionAnswered', 'question-4');
     const a = { ...answers, q4: val };
-    setAnswers(a); persist('question-5', a); setScreen('question-5');
+    setAnswers(a); persist(); setScreen('question-5');
   }
 
   function handleQ5(val: string) {
@@ -183,7 +181,7 @@ export default function App() {
     trackEvent('QuizQuestionAnswered', { question_number: 5 });
     saveAnalyticsEvent('QuestionAnswered', 'question-5');
     const a = { ...answers, q5: val };
-    setAnswers(a); persist('quick-questions', a); setScreen('quick-questions');
+    setAnswers(a); persist(); setScreen('quick-questions');
   }
 
   function handleQuickQuestions(vals: { q6: string; q7: string; q8: string }) {
@@ -194,14 +192,14 @@ export default function App() {
     trackEvent('QuizCompleted', undefined, true);
     saveAnalyticsEvent('QuizCompleted', 'quick-questions');
     const a = { ...answers, ...vals };
-    setAnswers(a); persist('processing', a); setScreen('processing');
+    setAnswers(a); persist(); setScreen('processing');
   }
 
   function handleProcessingComplete() {
     const computed = calculateScores(answers);
     setScores(computed);
     vibrateSpecial();
-    persist('result', answers);
+    persist();
     setScreen('result');
   }
 
@@ -209,14 +207,14 @@ export default function App() {
     sound(playTransitionSound);
     trackEvent('ViewResult', undefined, true);
     saveAnalyticsEvent('ViewResult', 'result');
-    persist('vsl', answers); setScreen('vsl');
+    persist(); setScreen('vsl');
   }
 
   function handleVSLContinue() {
     sound(playTransitionSound);
     trackEvent('InitiateCheckout', undefined, true);
     saveAnalyticsEvent('InitiateCheckout', 'vsl');
-    persist('sales', answers); setScreen('sales');
+    persist(); setScreen('sales');
   }
 
   const sp = { soundEnabled, onSoundToggle: handleSoundToggle };

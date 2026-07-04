@@ -1,6 +1,5 @@
 export type Screen =
   | 'welcome'
-  | 'before-start'
   | 'question-1'
   | 'question-2'
   | 'question-3'

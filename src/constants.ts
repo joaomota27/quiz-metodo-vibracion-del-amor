@@ -5,7 +5,6 @@ export const TOTAL_QUESTIONS = 5;
 
 export const SCREEN_ORDER = [
   'welcome',
-  'before-start',
   'question-1',
   'question-2',
   'question-3',

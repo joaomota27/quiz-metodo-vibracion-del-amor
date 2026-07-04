@@ -24,7 +24,6 @@ import { saveAnalyticsEvent } from './utils/analytics';
 
 import AppLayout from './components/AppLayout';
 import WelcomeScreen from './screens/WelcomeScreen';
-import BeforeStartScreen from './screens/BeforeStartScreen';
 import Question1Screen from './screens/Question1Screen';
 import Question2Screen from './screens/Question2Screen';
 import Question3Screen from './screens/Question3Screen';
@@ -126,16 +125,8 @@ export default function App() {
     sound(playClickSound);
     vibrateShort();
     saveAnalyticsEvent('QuizStart', 'welcome');
-    const next: Screen = 'before-start';
-    persist();
-    setScreen(next);
-  }
-
-  function handleBeforeStartContinue() {
-    handleFirstInteraction();
-    sound(playTransitionSound);
     trackEvent('QuizStarted', undefined, true);
-    saveAnalyticsEvent('QuizStarted', 'before-start');
+    saveAnalyticsEvent('QuizStarted', 'welcome');
     const next: Screen = 'question-1';
     persist();
     setScreen(next);
@@ -211,7 +202,6 @@ export default function App() {
     <AppLayout>
       <div onClick={handleFirstInteraction} style={{ width: '100%' }}>
         {screen === 'welcome' && <WelcomeScreen onStart={handleStart} {...sp} />}
-        {screen === 'before-start' && <BeforeStartScreen onContinue={handleBeforeStartContinue} {...sp} />}
         {screen === 'question-1' && <Question1Screen initialValue={answers.q1} onAnswer={handleQ1} {...sp} />}
         {screen === 'question-2' && <Question2Screen initialValue={answers.q2} onAnswer={handleQ2} {...sp} />}
         {screen === 'question-3' && <Question3Screen initialValue={answers.q3} onAnswer={handleQ3} {...sp} />}

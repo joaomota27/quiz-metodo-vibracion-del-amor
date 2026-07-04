@@ -4,7 +4,6 @@ import { Lock, BarChart2, Users, TrendingDown, RefreshCw, Trash2 } from 'lucide-
 
 const FUNNEL_STEPS = [
   { key: 'welcome', label: 'Welcome' },
-  { key: 'before-start', label: 'Antes de empezar' },
   { key: 'question-1', label: 'Pregunta 1' },
   { key: 'question-2', label: 'Pregunta 2' },
   { key: 'question-3', label: 'Pregunta 3' },

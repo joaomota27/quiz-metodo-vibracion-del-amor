@@ -18,20 +18,26 @@ const FUNNEL_STEPS = [
 ];
 
 function countByStep(events: AnalyticsEvent[]): Record<string, number> {
-  const counts: Record<string, number> = {};
+  const sessionsByStep: Record<string, Set<string>> = {};
   for (const e of events) {
-    counts[e.step] = (counts[e.step] ?? 0) + 1;
+    const session = e.session_id ?? `legacy-${e.timestamp}`;
+    (sessionsByStep[e.step] ??= new Set()).add(session);
   }
-  return counts;
+  return Object.fromEntries(
+    Object.entries(sessionsByStep).map(([step, sessions]) => [step, sessions.size])
+  );
 }
 
 function countBySource(events: AnalyticsEvent[]): Record<string, number> {
-  const counts: Record<string, number> = {};
+  const sessionsBySource: Record<string, Set<string>> = {};
   for (const e of events) {
     const src = e.utm_source ?? '(direct)';
-    counts[src] = (counts[src] ?? 0) + 1;
+    const session = e.session_id ?? `legacy-${e.timestamp}`;
+    (sessionsBySource[src] ??= new Set()).add(session);
   }
-  return counts;
+  return Object.fromEntries(
+    Object.entries(sessionsBySource).map(([source, sessions]) => [source, sessions.size])
+  );
 }
 
 function FunnelBar({ label, count, total, prev }: { label: string; count: number; total: number; prev: number }) {
@@ -259,7 +265,9 @@ export default function DashboardScreen() {
   const completionRate = totalStarts > 0 ? Math.round((totalCompleted / totalStarts) * 100) : 0;
   const totalSales = stepCounts['sales'] ?? 0;
 
-  const uniqueSessions = new Set(events.map(e => Math.floor(e.timestamp / (1000 * 60 * 30)))).size;
+  const uniqueSessions = new Set(
+    events.map(e => e.session_id ?? `legacy-${Math.floor(e.timestamp / (1000 * 60 * 30))}`)
+  ).size;
 
   return (
     <div style={{ minHeight: '100vh', background: bg, padding: 0 }}>

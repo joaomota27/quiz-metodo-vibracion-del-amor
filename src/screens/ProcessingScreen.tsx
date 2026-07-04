@@ -40,6 +40,7 @@ export default function ProcessingScreen({ onComplete, soundEnabled }: Props) {
   const [currentMsg, setCurrentMsg] = useState(MESSAGES[0]);
   const particles = useRef<Particle[]>(makeParticles(28));
   const soundRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const completedRef = useRef(false);
 
   useEffect(() => {
     const total = 4200;
@@ -56,7 +57,13 @@ export default function ProcessingScreen({ onComplete, soundEnabled }: Props) {
       setCurrentMsg(MESSAGES[idx]);
       if (pct >= 100) {
         clearInterval(timer);
-        setTimeout(() => setDone(true), 500);
+        setTimeout(() => {
+          setDone(true);
+          if (!completedRef.current) {
+            completedRef.current = true;
+            onComplete();
+          }
+        }, 500);
       }
     }, step);
 
@@ -68,7 +75,7 @@ export default function ProcessingScreen({ onComplete, soundEnabled }: Props) {
       clearInterval(timer);
       if (soundRef.current) clearInterval(soundRef.current);
     };
-  }, [soundEnabled]);
+  }, [soundEnabled, onComplete]);
 
   return (
     <div style={{

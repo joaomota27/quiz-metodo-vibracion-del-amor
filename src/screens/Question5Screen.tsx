@@ -29,7 +29,7 @@ export default function Question5Screen({ initialValue, onAnswer, soundEnabled, 
 
   return (
     <QuestionCard
-      stepNumber={5} totalSteps={8}
+      stepNumber={5} totalSteps={5}
       question="Si pudieras fortalecer una sola área de tu vida emocional hoy, ¿cuál elegirías?"
       microfeedback="Tu resultado está tomando forma…"
       soundEnabled={soundEnabled} onSoundToggle={onSoundToggle}

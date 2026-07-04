@@ -28,7 +28,7 @@ export default function Question1Screen({ initialValue, onAnswer, soundEnabled, 
 
   return (
     <QuestionCard
-      stepNumber={1} totalSteps={8}
+      stepNumber={1} totalSteps={5}
       question="Durante las últimas semanas, ¿cómo describirías tu estado emocional?"
       soundEnabled={soundEnabled} onSoundToggle={onSoundToggle}
       onNext={() => { if (selected) onAnswer(selected); }}

@@ -15,10 +15,8 @@ import {
   playClickSound,
   playSelectSound,
   playTransitionSound,
-  playCompleteSound,
   unlockAudio,
   vibrateShort,
-  vibrateMedium,
   vibrateSpecial,
 } from './utils/sound';
 import { initTracking, trackEvent, trackPageView } from './tracking';
@@ -32,7 +30,6 @@ import Question2Screen from './screens/Question2Screen';
 import Question3Screen from './screens/Question3Screen';
 import Question4Screen from './screens/Question4Screen';
 import Question5Screen from './screens/Question5Screen';
-import QuickQuestionsScreen from './screens/QuickQuestionsScreen';
 import ProcessingScreen from './screens/ProcessingScreen';
 import ResultScreen from './screens/ResultScreen';
 import VideoSection from './screens/VideoSection';
@@ -179,19 +176,10 @@ export default function App() {
   function handleQ5(val: string) {
     sound(playSelectSound); vibrateShort();
     trackEvent('QuizQuestionAnswered', { question_number: 5 });
-    saveAnalyticsEvent('QuestionAnswered', 'question-5');
-    const a = { ...answers, q5: val };
-    setAnswers(a); persist(); setScreen('quick-questions');
-  }
-
-  function handleQuickQuestions(vals: { q6: string; q7: string; q8: string }) {
-    sound(playCompleteSound); vibrateMedium();
-    trackEvent('QuizQuestionAnswered', { question_number: 6 });
-    trackEvent('QuizQuestionAnswered', { question_number: 7 });
-    trackEvent('QuizQuestionAnswered', { question_number: 8 });
     trackEvent('QuizCompleted', undefined, true);
-    saveAnalyticsEvent('QuizCompleted', 'quick-questions');
-    const a = { ...answers, ...vals };
+    saveAnalyticsEvent('QuestionAnswered', 'question-5');
+    saveAnalyticsEvent('QuizCompleted', 'question-5');
+    const a = { ...answers, q5: val };
     setAnswers(a); persist(); setScreen('processing');
   }
 
@@ -229,13 +217,6 @@ export default function App() {
         {screen === 'question-3' && <Question3Screen initialValue={answers.q3} onAnswer={handleQ3} {...sp} />}
         {screen === 'question-4' && <Question4Screen initialValue={answers.q4} onAnswer={handleQ4} {...sp} />}
         {screen === 'question-5' && <Question5Screen initialValue={answers.q5} onAnswer={handleQ5} {...sp} />}
-        {screen === 'quick-questions' && (
-          <QuickQuestionsScreen
-            initialValues={{ q6: answers.q6, q7: answers.q7, q8: answers.q8 }}
-            onAnswer={handleQuickQuestions}
-            {...sp}
-          />
-        )}
         {screen === 'processing' && <ProcessingScreen onComplete={handleProcessingComplete} soundEnabled={soundEnabled} />}
         {screen === 'result' && <ResultScreen scores={scores} onContinue={handleResultContinue} {...sp} />}
         {screen === 'vsl' && <VideoSection onContinue={handleVSLContinue} {...sp} />}

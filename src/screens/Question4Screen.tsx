@@ -28,7 +28,7 @@ export default function Question4Screen({ initialValue, onAnswer, soundEnabled, 
 
   return (
     <QuestionCard
-      stepNumber={4} totalSteps={8}
+      stepNumber={4} totalSteps={5}
       question="¿Con qué frecuencia dejas tus propias necesidades para cuidar de los demás?"
       microfeedback="Estamos entendiendo mejor tu energía emocional…"
       soundEnabled={soundEnabled} onSoundToggle={onSoundToggle}

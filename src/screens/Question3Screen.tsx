@@ -15,7 +15,7 @@ export default function Question3Screen({ initialValue, onAnswer, soundEnabled, 
 
   return (
     <QuestionCard
-      stepNumber={3} totalSteps={8}
+      stepNumber={3} totalSteps={5}
       question="¿Qué tan conectada te sientes contigo misma hoy?"
       microfeedback="Tu resultado está tomando forma…"
       soundEnabled={soundEnabled} onSoundToggle={onSoundToggle}

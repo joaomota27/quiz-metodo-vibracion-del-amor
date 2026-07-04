@@ -45,29 +45,12 @@ export function calculateScores(answers: QuizAnswers): Scores {
   else if (answers.q5 === 'C') pazInterior += 3;
   else if (answers.q5 === 'D') aberturaEmocional += 3;
 
-  // Q6
-  if (answers.q6 === 'A') amorPropio += 4;
-  else if (answers.q6 === 'B') amorPropio += 2;
-  else if (answers.q6 === 'C') amorPropio += 1;
-
-  // Q7
-  if (answers.q7 === 'A') { confianza += 4; amorPropio += 4; }
-  else if (answers.q7 === 'B') { confianza += 3; amorPropio += 3; }
-  else if (answers.q7 === 'C') { confianza += 2; amorPropio += 2; }
-  else if (answers.q7 === 'D') { confianza += 1; amorPropio += 1; }
-
-  // Q8
-  if (answers.q8 === 'A') { pazInterior += 4; aberturaEmocional += 4; }
-  else if (answers.q8 === 'B') { pazInterior += 3; aberturaEmocional += 3; }
-  else if (answers.q8 === 'C') { pazInterior += 2; aberturaEmocional += 2; }
-
-  // Max possible: amorPropio = 1+3+5+4+3+4+4 = 24, confianza = 3+3+4+3+4 = 17,
-  // pazInterior = 4+2+3+4+4 = 17, aberturaEmocional = 4+1+3+4 = 12
+  // Maximum scores for the five-question version of the quiz.
   return {
-    amorPropio: normalize(amorPropio, 24),
-    confianza: normalize(confianza, 17),
-    pazInterior: normalize(pazInterior, 17),
-    aberturaEmocional: normalize(aberturaEmocional, 12),
+    amorPropio: normalize(amorPropio, 13),
+    confianza: normalize(confianza, 13),
+    pazInterior: normalize(pazInterior, 8),
+    aberturaEmocional: normalize(aberturaEmocional, 8),
   };
 }
 

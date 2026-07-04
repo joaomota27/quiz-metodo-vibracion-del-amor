@@ -6,7 +6,6 @@ export type Screen =
   | 'question-3'
   | 'question-4'
   | 'question-5'
-  | 'quick-questions'
   | 'processing'
   | 'result'
   | 'vsl'
@@ -25,9 +24,6 @@ export interface QuizAnswers {
   q3?: number;
   q4?: string;
   q5?: string;
-  q6?: string;
-  q7?: string;
-  q8?: string;
 }
 
 export interface AppState {

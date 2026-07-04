@@ -28,7 +28,7 @@ export default function Question2Screen({ initialValue, onAnswer, soundEnabled, 
 
   return (
     <QuestionCard
-      stepNumber={2} totalSteps={8}
+      stepNumber={2} totalSteps={5}
       question="Cuando piensas en el amor, ¿qué sentimiento aparece primero?"
       soundEnabled={soundEnabled} onSoundToggle={onSoundToggle}
       onNext={() => { if (selected) onAnswer(selected); }}

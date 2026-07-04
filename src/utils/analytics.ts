@@ -1,4 +1,4 @@
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 export const ANALYTICS_KEY = 'quiz_analytics';
 const SESSION_KEY = 'quiz_session_id';
@@ -28,14 +28,18 @@ interface AnalyticsRow {
   user_agent: string;
 }
 
-let supabase: SupabaseClient | null | undefined;
+let supabasePromise: Promise<SupabaseClient | null> | undefined;
 
-function getSupabase(): SupabaseClient | null {
-  if (supabase !== undefined) return supabase;
+function getSupabase(): Promise<SupabaseClient | null> {
+  if (supabasePromise) return supabasePromise;
   const url = import.meta.env.VITE_SUPABASE_URL;
   const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-  supabase = url && anonKey ? createClient(url, anonKey) : null;
-  return supabase;
+  if (!url || !anonKey) return Promise.resolve(null);
+
+  supabasePromise = import('@supabase/supabase-js').then(({ createClient }) =>
+    createClient(url, anonKey)
+  );
+  return supabasePromise;
 }
 
 function getSessionId(): string {
@@ -116,13 +120,13 @@ export function saveAnalyticsEvent(event: string, step: string): void {
 
   saveLocal(payload);
 
-  const client = getSupabase();
-  if (!client) return;
-  void client.from(TABLE_NAME).insert(toRow(payload));
+  void getSupabase().then(client => {
+    if (client) return client.from(TABLE_NAME).insert(toRow(payload));
+  });
 }
 
 export async function getAnalyticsEvents(): Promise<AnalyticsEvent[]> {
-  const client = getSupabase();
+  const client = await getSupabase();
   if (client) {
     const { data, error } = await client
       .from(TABLE_NAME)
@@ -143,7 +147,7 @@ export async function getAnalyticsEvents(): Promise<AnalyticsEvent[]> {
 }
 
 export async function clearAnalyticsEvents(): Promise<void> {
-  const client = getSupabase();
+  const client = await getSupabase();
   if (client) {
     await client.from(TABLE_NAME).delete().neq('id', '00000000-0000-0000-0000-000000000000');
   }

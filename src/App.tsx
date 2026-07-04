@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { lazy, Suspense, useState, useCallback, useEffect } from 'react';
 
 const removeFloating = () => {
   document.querySelectorAll('[style="position: fixed"][style="bottom: 1rem"][style="right: 1rem"][style="z-index: 2147483647"]').forEach(el => el.remove());
@@ -30,9 +30,10 @@ import Question3Screen from './screens/Question3Screen';
 import Question4Screen from './screens/Question4Screen';
 import Question5Screen from './screens/Question5Screen';
 import ProcessingScreen from './screens/ProcessingScreen';
-import ResultScreen from './screens/ResultScreen';
-import VideoSection from './screens/VideoSection';
-import SalesPage from './screens/SalesPage';
+
+const ResultScreen = lazy(() => import('./screens/ResultScreen'));
+const VideoSection = lazy(() => import('./screens/VideoSection'));
+const SalesPage = lazy(() => import('./screens/SalesPage'));
 
 const STORAGE_KEY = 'vda_app_state';
 
@@ -201,16 +202,18 @@ export default function App() {
   return (
     <AppLayout>
       <div onClick={handleFirstInteraction} style={{ width: '100%' }}>
-        {screen === 'welcome' && <WelcomeScreen onStart={handleStart} {...sp} />}
-        {screen === 'question-1' && <Question1Screen initialValue={answers.q1} onAnswer={handleQ1} {...sp} />}
-        {screen === 'question-2' && <Question2Screen initialValue={answers.q2} onAnswer={handleQ2} {...sp} />}
-        {screen === 'question-3' && <Question3Screen initialValue={answers.q3} onAnswer={handleQ3} {...sp} />}
-        {screen === 'question-4' && <Question4Screen initialValue={answers.q4} onAnswer={handleQ4} {...sp} />}
-        {screen === 'question-5' && <Question5Screen initialValue={answers.q5} onAnswer={handleQ5} {...sp} />}
-        {screen === 'processing' && <ProcessingScreen onComplete={handleProcessingComplete} soundEnabled={soundEnabled} />}
-        {screen === 'result' && <ResultScreen scores={scores} onContinue={handleResultContinue} {...sp} />}
-        {screen === 'vsl' && <VideoSection onContinue={handleVSLContinue} {...sp} />}
-        {screen === 'sales' && <SalesPage />}
+        <Suspense fallback={null}>
+          {screen === 'welcome' && <WelcomeScreen onStart={handleStart} {...sp} />}
+          {screen === 'question-1' && <Question1Screen initialValue={answers.q1} onAnswer={handleQ1} {...sp} />}
+          {screen === 'question-2' && <Question2Screen initialValue={answers.q2} onAnswer={handleQ2} {...sp} />}
+          {screen === 'question-3' && <Question3Screen initialValue={answers.q3} onAnswer={handleQ3} {...sp} />}
+          {screen === 'question-4' && <Question4Screen initialValue={answers.q4} onAnswer={handleQ4} {...sp} />}
+          {screen === 'question-5' && <Question5Screen initialValue={answers.q5} onAnswer={handleQ5} {...sp} />}
+          {screen === 'processing' && <ProcessingScreen onComplete={handleProcessingComplete} soundEnabled={soundEnabled} />}
+          {screen === 'result' && <ResultScreen scores={scores} onContinue={handleResultContinue} {...sp} />}
+          {screen === 'vsl' && <VideoSection onContinue={handleVSLContinue} {...sp} />}
+          {screen === 'sales' && <SalesPage />}
+        </Suspense>
       </div>
     </AppLayout>
   );

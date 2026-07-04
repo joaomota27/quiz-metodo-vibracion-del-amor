@@ -61,7 +61,7 @@ export default function WelcomeScreen({ onStart, soundEnabled, onSoundToggle }: 
         style={{
           position: 'absolute',
           inset: '-6%',
-          backgroundImage: "url('/ChatGPT_Image_22_de_jun._de_2026,_22_01_58.png')",
+          backgroundImage: "url('/welcome-hero.jpg')",
           backgroundSize: 'cover',
           backgroundPosition: 'center 30%',
           transition: 'transform 0.6s cubic-bezier(0.22,1,0.36,1)',

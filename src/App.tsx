@@ -10,7 +10,6 @@ const observer = new MutationObserver(removeFloating);
 observer.observe(document.body, { childList: true, subtree: true });
 
 import type { Screen, QuizAnswers, Scores } from './types';
-import { calculateScores } from './utils/scoring';
 import {
   playClickSound,
   playSelectSound,
@@ -24,13 +23,13 @@ import { saveAnalyticsEvent } from './utils/analytics';
 
 import AppLayout from './components/AppLayout';
 import WelcomeScreen from './screens/WelcomeScreen';
-import Question1Screen from './screens/Question1Screen';
-import Question2Screen from './screens/Question2Screen';
-import Question3Screen from './screens/Question3Screen';
-import Question4Screen from './screens/Question4Screen';
-import Question5Screen from './screens/Question5Screen';
-import ProcessingScreen from './screens/ProcessingScreen';
 
+const Question1Screen = lazy(() => import('./screens/Question1Screen'));
+const Question2Screen = lazy(() => import('./screens/Question2Screen'));
+const Question3Screen = lazy(() => import('./screens/Question3Screen'));
+const Question4Screen = lazy(() => import('./screens/Question4Screen'));
+const Question5Screen = lazy(() => import('./screens/Question5Screen'));
+const ProcessingScreen = lazy(() => import('./screens/ProcessingScreen'));
 const ResultScreen = lazy(() => import('./screens/ResultScreen'));
 const VideoSection = lazy(() => import('./screens/VideoSection'));
 const SalesPage = lazy(() => import('./screens/SalesPage'));
@@ -175,7 +174,8 @@ export default function App() {
     setAnswers(a); persist(); setScreen('processing');
   }
 
-  function handleProcessingComplete() {
+  async function handleProcessingComplete() {
+    const { calculateScores } = await import('./utils/scoring');
     const computed = calculateScores(answers);
     setScores(computed);
     vibrateSpecial();

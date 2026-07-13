@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react';
-import { Lock } from 'lucide-react';
 import SoundToggle from '../components/SoundToggle';
 
 interface WelcomeScreenProps {
@@ -47,7 +46,6 @@ export default function WelcomeScreen({ onStart, soundEnabled, onSoundToggle }: 
   return (
     <div style={{
       position: 'relative',
-      minHeight: '100vh',
       minHeight: '100dvh',
       display: 'flex',
       flexDirection: 'column',
@@ -61,13 +59,26 @@ export default function WelcomeScreen({ onStart, soundEnabled, onSoundToggle }: 
         style={{
           position: 'absolute',
           inset: '-6%',
-          backgroundImage: "url('/welcome-hero.jpg')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center 30%',
           transition: 'transform 0.6s cubic-bezier(0.22,1,0.36,1)',
           willChange: 'transform',
         }}
-      />
+      >
+        <img
+          src="/welcome-hero.jpg"
+          alt=""
+          aria-hidden="true"
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            objectPosition: 'center 30%',
+            display: 'block',
+          }}
+        />
+      </div>
 
       {/* ── Overlay graduado premium ── */}
       {/* Topo transparente → respira a imagem */}
@@ -315,7 +326,7 @@ export default function WelcomeScreen({ onStart, soundEnabled, onSoundToggle }: 
             marginTop: 16,
           }}
         >
-          <Lock size={10} style={{ color: 'rgba(255,255,255,0.3)' }} />
+          <IconLock />
           <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.02em' }}>
             Tu información está 100% protegida
           </span>
@@ -350,6 +361,15 @@ function IconClock() {
     <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="8" cy="8" r="6.5"/>
       <path d="M8 5v3.5l2 1.2"/>
+    </svg>
+  );
+}
+
+function IconLock() {
+  return (
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" aria-hidden="true" style={{ color: 'rgba(255,255,255,0.3)' }}>
+      <rect x="5" y="10" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="2" />
+      <path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
     </svg>
   );
 }

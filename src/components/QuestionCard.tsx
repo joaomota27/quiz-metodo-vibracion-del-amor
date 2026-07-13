@@ -25,7 +25,6 @@ export default function QuestionCard({
     <div
       className="anim-fade-in"
       style={{
-        minHeight: '100vh',
         minHeight: '100dvh',
         display: 'flex',
         flexDirection: 'column',

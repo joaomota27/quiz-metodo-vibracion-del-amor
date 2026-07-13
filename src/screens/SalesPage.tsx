@@ -1,6 +1,6 @@
 import { Heart, Check, Lock, Star, Smartphone } from 'lucide-react';
 import { CHECKOUT_URL } from '../constants';
-import { trackEvent, appendTrackingToUrl } from '../tracking';
+import { appendTrackingToUrl } from '../tracking';
 import CTAButton from '../components/CTAButton';
 import TestimonialCard from '../components/TestimonialCard';
 import FAQItem from '../components/FAQItem';

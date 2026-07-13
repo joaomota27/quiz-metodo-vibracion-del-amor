@@ -148,7 +148,7 @@ export default function ResultScreen({ scores, onContinue, soundEnabled, onSound
 
         {/* Bars */}
         <div className="glass-dark anim-fade-up delay-400" style={{ width: '90%', margin: '0 auto 20px', borderRadius: 24, padding: 20 }}>
-          {dims.map(d => <DimensionBar key={d.key} {...d} />)}
+          {dims.map(({ key, ...dimension }) => <DimensionBar key={key} {...dimension} />)}
         </div>
 
         {/* Personalized text */}

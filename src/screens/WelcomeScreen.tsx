@@ -1,4 +1,3 @@
-import { useEffect, useRef } from 'react';
 import SoundToggle from '../components/SoundToggle';
 
 interface WelcomeScreenProps {
@@ -28,21 +27,6 @@ function makeSparkles(n: number): Spark[] {
 const SPARKLES = makeSparkles(18);
 
 export default function WelcomeScreen({ onStart, soundEnabled, onSoundToggle }: WelcomeScreenProps) {
-  const bgRef = useRef<HTMLDivElement>(null);
-
-  // Leve parallax ao tocar/mover no mobile
-  useEffect(() => {
-    const el = bgRef.current;
-    if (!el) return;
-    function onMove(e: MouseEvent) {
-      const nx = (e.clientX / window.innerWidth - 0.5) * 12;
-      const ny = (e.clientY / window.innerHeight - 0.5) * 8;
-      el!.style.transform = `translate(${nx}px, ${ny}px) scale(1.06)`;
-    }
-    window.addEventListener('mousemove', onMove);
-    return () => window.removeEventListener('mousemove', onMove);
-  }, []);
-
   return (
     <div style={{
       position: 'relative',
@@ -55,12 +39,9 @@ export default function WelcomeScreen({ onStart, soundEnabled, onSoundToggle }: 
 
       {/* ── Imagem de fundo com parallax ── */}
       <div
-        ref={bgRef}
         style={{
           position: 'absolute',
           inset: '-6%',
-          transition: 'transform 0.6s cubic-bezier(0.22,1,0.36,1)',
-          willChange: 'transform',
         }}
       >
         <img
@@ -70,7 +51,7 @@ export default function WelcomeScreen({ onStart, soundEnabled, onSoundToggle }: 
           height="1844"
           loading="eager"
           fetchPriority="high"
-          decoding="sync"
+          decoding="async"
           style={{
             width: '100%',
             height: '100%',

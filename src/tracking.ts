@@ -22,25 +22,7 @@ interface DebugEvent {
 const STORAGE_KEY = 'vda_tracking_data';
 const DEBUG_KEY = 'vda_debug_events';
 const PARAM_KEYS = ['fbclid', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'] as const;
-const META_STANDARD_EVENTS = new Set([
-  'AddPaymentInfo',
-  'AddToCart',
-  'AddToWishlist',
-  'CompleteRegistration',
-  'Contact',
-  'CustomizeProduct',
-  'Donate',
-  'FindLocation',
-  'InitiateCheckout',
-  'Lead',
-  'Purchase',
-  'Schedule',
-  'Search',
-  'StartTrial',
-  'SubmitApplication',
-  'Subscribe',
-  'ViewContent',
-]);
+const BLOCKED_PIXEL_EVENTS = new Set(['InitiateCheckout']);
 
 // ── Pixel loader (singleton, idempotent) ───────────────────
 
@@ -146,13 +128,14 @@ export function appendTrackingToUrl(url: string): string {
 const firedEvents = new Set<string>();
 
 export function trackEvent(name: string, params?: Record<string, unknown>, unique = false): void {
+  if (BLOCKED_PIXEL_EVENTS.has(name)) return;
   if (unique && firedEvents.has(name)) return;
   firedEvents.add(name);
 
   if (typeof window === 'undefined') return;
   if (!(window as any).fbq) return;
 
-  (window as any).fbq(META_STANDARD_EVENTS.has(name) ? 'track' : 'trackCustom', name, params ?? {});
+  (window as any).fbq('trackCustom', name, params ?? {});
   logDebug(name, params);
 }
 

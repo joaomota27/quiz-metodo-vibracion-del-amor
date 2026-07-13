@@ -9,7 +9,6 @@ import AudioPlayer, { type AudioTrack } from '../components/AudioPlayer';
 import React from 'react';
 
 function goToCheckout() {
-  trackEvent('InitiateCheckout', undefined, true);
   window.location.href = appendTrackingToUrl(CHECKOUT_URL);
 }
 

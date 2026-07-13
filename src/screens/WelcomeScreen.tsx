@@ -65,11 +65,12 @@ export default function WelcomeScreen({ onStart, soundEnabled, onSoundToggle }: 
       >
         <img
           src="/welcome-hero.jpg"
-          alt=""
-          aria-hidden="true"
+          alt="Método Vibración del Amor"
+          width="853"
+          height="1844"
           loading="eager"
           fetchPriority="high"
-          decoding="async"
+          decoding="sync"
           style={{
             width: '100%',
             height: '100%',
@@ -216,9 +217,7 @@ export default function WelcomeScreen({ onStart, soundEnabled, onSoundToggle }: 
 
         {/* Headline */}
         <h1
-          className="anim-hero"
           style={{
-            animationDelay: '0.28s',
             fontFamily: "'Playfair Display', Georgia, serif",
             fontSize: 26,
             lineHeight: 1.32,
@@ -244,9 +243,7 @@ export default function WelcomeScreen({ onStart, soundEnabled, onSoundToggle }: 
 
         {/* Subheadline */}
         <p
-          className="anim-hero"
           style={{
-            animationDelay: '0.42s',
             textAlign: 'center',
             color: 'rgba(255,255,255,0.62)',
             fontSize: 14,

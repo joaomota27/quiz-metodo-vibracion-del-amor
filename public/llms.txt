@@ -1,0 +1,5 @@
+# Método Vibración del Amor
+
+Página de avaliação emocional gratuita e personalizada para usuárias interessadas em bem-estar emocional e abertura ao amor.
+
+URL principal: https://quizvibraciondelamor.vercel.app/

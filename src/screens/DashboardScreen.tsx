@@ -25,6 +25,34 @@ const FUNNEL_STEP_LABELS: Record<RelevantStepId, string> = {
   result: QUIZ_STEP_LABELS.result,
 };
 
+function formatDateTime(timestamp: number): string {
+  if (!Number.isFinite(timestamp) || timestamp <= 0) return '—';
+  return new Intl.DateTimeFormat('pt-BR', {
+    dateStyle: 'short',
+    timeStyle: 'short',
+  }).format(new Date(timestamp));
+}
+
+function getDateRange(events: AnalyticsEvent[]): { start: number | null; end: number | null } {
+  const timestamps = events
+    .map(event => event.timestamp)
+    .filter(timestamp => Number.isFinite(timestamp) && timestamp > 0);
+
+  if (timestamps.length === 0) return { start: null, end: null };
+
+  return {
+    start: Math.min(...timestamps),
+    end: Math.max(...timestamps),
+  };
+}
+
+function formatDateRange(events: AnalyticsEvent[]): string {
+  const { start, end } = getDateRange(events);
+  if (!start || !end) return 'Sem período registrado';
+  if (start === end) return formatDateTime(start);
+  return `${formatDateTime(start)} até ${formatDateTime(end)}`;
+}
+
 function getSessionKey(event: AnalyticsEvent): string {
   return event.session_id ?? `legacy-${Math.floor(event.timestamp / (1000 * 60 * 30))}`;
 }
@@ -199,7 +227,7 @@ export default function DashboardScreen() {
       setAuthed(true);
       setError('');
     } else {
-      setError('Contraseña incorrecta.');
+      setError('Senha incorreta.');
     }
   }
 
@@ -213,7 +241,7 @@ export default function DashboardScreen() {
   }
 
   async function handleClear() {
-    if (confirm('¿Eliminar todos los datos de analytics?')) {
+    if (confirm('Excluir todos os dados de analytics?')) {
       await clearAnalyticsEvents();
       setEvents([]);
     }
@@ -253,7 +281,7 @@ export default function DashboardScreen() {
           <form onSubmit={handleLogin}>
             <input
               type="password"
-              placeholder="Contraseña"
+              placeholder="Senha"
               value={pw}
               onChange={e => setPw(e.target.value)}
               style={{
@@ -302,6 +330,7 @@ export default function DashboardScreen() {
   const totalCompleted = funnelSteps.find(step => step.id === 'result')?.reachedCount ?? 0;
   const completionRate = totalStarts > 0 ? Math.round((totalCompleted / totalStarts) * 100) : 0;
   const totalSales = stepCounts['sales'] ?? 0;
+  const dateRangeLabel = formatDateRange(events);
 
   const uniqueSessions = new Set(
     events.map(getSessionKey)
@@ -324,9 +353,9 @@ export default function DashboardScreen() {
             fontSize: clampFont(16, 20),
             fontFamily: "'Playfair Display', Georgia, serif",
             margin: 0,
-          }}>Analytics Dashboard</h1>
+          }}>Dashboard Analytics</h1>
           <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11, margin: 0 }}>
-            Vibración del Amor™ · {events.length} eventos registrados
+            Método Vibración del Amor™ · {events.length} eventos registrados · {dateRangeLabel}
           </p>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
@@ -373,10 +402,21 @@ export default function DashboardScreen() {
         {/* KPI Cards */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, marginBottom: 16 }}>
           <StatCard label="Visitantes" value={totalVisitors} />
-          <StatCard label="Inicios del quiz" value={totalStarts} />
-          <StatCard label="Completaron quiz" value={totalCompleted} sub={`${completionRate}% tasa`} />
-          <StatCard label="Llegaron a ventas" value={totalSales} />
+          <StatCard label="Inícios do quiz" value={totalStarts} />
+          <StatCard label="Concluíram o quiz" value={totalCompleted} sub={`${completionRate}% taxa`} />
+          <StatCard label="Chegaram em vendas" value={totalSales} />
         </div>
+
+        <Card title="Período dos dados">
+          <div style={{ display: 'grid', gap: 8 }}>
+            <p style={{ color: 'rgba(255,255,255,0.72)', fontSize: 13, margin: 0 }}>
+              {dateRangeLabel}
+            </p>
+            <p style={{ color: 'rgba(255,255,255,0.38)', fontSize: 11, margin: 0 }}>
+              O período é calculado automaticamente pela menor e maior data dos eventos carregados.
+            </p>
+          </div>
+        </Card>
 
         {/* Funnel */}
         <Card title="Funil de Conversão" icon={<TrendingDown size={16} />}>
@@ -384,10 +424,10 @@ export default function DashboardScreen() {
         </Card>
 
         {/* Traffic Sources */}
-        <Card title="Fuentes de tráfico (utm_source)" icon={<Users size={16} />}>
+        <Card title="Fontes de tráfego (utm_source)" icon={<Users size={16} />}>
           {Object.keys(sourceCounts).length === 0 ? (
             <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13, textAlign: 'center', margin: '16px 0' }}>
-              Sin datos de UTM registrados aún.
+              Ainda não há dados de UTM registrados.
             </p>
           ) : (
             <BarChart data={sourceCounts} />
@@ -396,7 +436,7 @@ export default function DashboardScreen() {
 
         {/* UTM Details */}
         {Object.keys(sourceCounts).length > 0 && (
-          <Card title="Detalle de fuentes" icon={<BarChart2 size={16} />}>
+          <Card title="Detalhe das fontes" icon={<BarChart2 size={16} />}>
             {Object.entries(sourceCounts)
               .sort((a, b) => b[1] - a[1])
               .map(([src, cnt]) => {
@@ -429,9 +469,9 @@ export default function DashboardScreen() {
         )}
 
         {/* Step completion rates */}
-        <Card title="Tasa de completación por paso" icon={<BarChart2 size={16} />}>
+        <Card title="Taxa de conclusão por etapa" icon={<BarChart2 size={16} />}>
           <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginBottom: 12 }}>
-            Porcentaje de visitantes que llegaron a cada etapa (base: visitantes)
+            Percentual de visitantes que chegaram a cada etapa (base: visitantes)
           </div>
           {funnelSteps.map(step => {
             const count = step.reachedCount;
@@ -461,7 +501,7 @@ export default function DashboardScreen() {
         </Card>
 
         <p style={{ color: 'rgba(255,255,255,0.2)', fontSize: 10, textAlign: 'center', marginTop: 8, marginBottom: 24 }}>
-          Datos centralizados de visitantes · {uniqueSessions} sesiones únicas · quiz_analytics_events
+          Dados centralizados de visitantes · {uniqueSessions} sessões únicas · quiz_analytics_events
         </p>
       </div>
     </div>

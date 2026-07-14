@@ -19,14 +19,14 @@ export const SCREEN_ORDER = [
 export const QUIZ_STEP_LABELS: Record<(typeof SCREEN_ORDER)[number], string> = {
   welcome: 'Visitantes',
   'question-1': 'Estado emocional',
-  'question-2': 'Sentimiento sobre el amor',
-  'question-3': 'Conexión contigo misma',
-  'question-4': 'Necesidades y cuidado',
-  'question-5': 'Área emocional prioritaria',
-  processing: 'Procesando',
-  result: 'Conclusión del quiz',
-  vsl: 'Video',
-  sales: 'Página de ventas',
+  'question-2': 'Sentimento sobre o amor',
+  'question-3': 'Conexão consigo mesma',
+  'question-4': 'Necessidades e cuidado',
+  'question-5': 'Área emocional prioritária',
+  processing: 'Processando',
+  result: 'Conclusão do quiz',
+  vsl: 'Vídeo',
+  sales: 'Página de vendas',
 };
 
 export const QUIZ_RELEVANT_FUNNEL_SCREENS = [

@@ -1,25 +1,88 @@
 import { useState, useEffect, type ReactNode, type FormEvent } from 'react';
 import { getAnalyticsEvents, clearAnalyticsEvents, type AnalyticsEvent } from '../utils/analytics';
 import { Lock, BarChart2, Users, TrendingDown, RefreshCw, Trash2 } from 'lucide-react';
+import QuizConversionFunnel, { type QuizFunnelStep } from '../components/QuizConversionFunnel';
+import { QUIZ_RELEVANT_FUNNEL_SCREENS, QUIZ_STEP_LABELS } from '../constants';
 
-const FUNNEL_STEPS = [
-  { key: 'welcome', label: 'Welcome' },
-  { key: 'question-1', label: 'Pregunta 1' },
-  { key: 'question-2', label: 'Pregunta 2' },
-  { key: 'question-3', label: 'Pregunta 3' },
-  { key: 'question-4', label: 'Pregunta 4' },
-  { key: 'question-5', label: 'Pregunta 5' },
-  { key: 'quick-questions', label: 'Preguntas rápidas' },
-  { key: 'processing', label: 'Procesando' },
-  { key: 'result', label: 'Resultado' },
-  { key: 'vsl', label: 'Video' },
-  { key: 'sales', label: 'Ventas' },
-];
+const START_EVENTS = new Set(['QuizStart', 'QuizStarted']);
+const COMPLETION_EVENTS = new Set(['QuizCompleted']);
+const RELEVANT_STEP_ORDER = ['welcome', 'quiz-start', ...QUIZ_RELEVANT_FUNNEL_SCREENS] as const;
+
+type RelevantStepId = (typeof RELEVANT_STEP_ORDER)[number];
+
+const RELEVANT_STEP_INDEX = new Map<RelevantStepId, number>(
+  RELEVANT_STEP_ORDER.map((step, index) => [step, index])
+);
+
+const FUNNEL_STEP_LABELS: Record<RelevantStepId, string> = {
+  welcome: QUIZ_STEP_LABELS.welcome,
+  'quiz-start': 'Iniciaram o quiz',
+  'question-1': QUIZ_STEP_LABELS['question-1'],
+  'question-2': QUIZ_STEP_LABELS['question-2'],
+  'question-3': QUIZ_STEP_LABELS['question-3'],
+  'question-4': QUIZ_STEP_LABELS['question-4'],
+  'question-5': QUIZ_STEP_LABELS['question-5'],
+  result: QUIZ_STEP_LABELS.result,
+};
+
+function getSessionKey(event: AnalyticsEvent): string {
+  return event.session_id ?? `legacy-${Math.floor(event.timestamp / (1000 * 60 * 30))}`;
+}
+
+function safePercent(numerator: number, denominator: number): number {
+  if (denominator <= 0) return 0;
+  return (numerator / denominator) * 100;
+}
+
+function getReachedIndex(event: AnalyticsEvent): number | null {
+  if (START_EVENTS.has(event.event)) return RELEVANT_STEP_INDEX.get('quiz-start') ?? null;
+  if (COMPLETION_EVENTS.has(event.event)) return RELEVANT_STEP_INDEX.get('result') ?? null;
+  if (event.step === 'processing') return RELEVANT_STEP_INDEX.get('question-5') ?? null;
+  if (event.step === 'vsl' || event.step === 'sales') return RELEVANT_STEP_INDEX.get('result') ?? null;
+  return RELEVANT_STEP_INDEX.get(event.step as RelevantStepId) ?? null;
+}
+
+function buildQuizFunnel(events: AnalyticsEvent[]): QuizFunnelStep[] {
+  const maxReachedBySession = new Map<string, number>();
+
+  for (const event of events) {
+    const reachedIndex = getReachedIndex(event);
+    if (reachedIndex === null) continue;
+    const session = getSessionKey(event);
+    maxReachedBySession.set(session, Math.max(maxReachedBySession.get(session) ?? 0, reachedIndex));
+  }
+
+  const counts = RELEVANT_STEP_ORDER.map((_, stepIndex) => {
+    let count = 0;
+    for (const maxReached of maxReachedBySession.values()) {
+      if (maxReached >= stepIndex) count += 1;
+    }
+    return count;
+  });
+
+  const firstCount = counts[0] ?? 0;
+
+  return RELEVANT_STEP_ORDER.map((step, index) => {
+    const reachedCount = counts[index] ?? 0;
+    const previousCount = index > 0 ? counts[index - 1] ?? 0 : 0;
+    const conversionFromPrevious = index === 0 ? null : safePercent(reachedCount, previousCount);
+    const dropoffRate = index === 0 ? null : Math.max(0, 100 - (conversionFromPrevious ?? 0));
+
+    return {
+      id: step,
+      name: FUNNEL_STEP_LABELS[step],
+      reachedCount,
+      conversionFromStart: safePercent(reachedCount, firstCount),
+      conversionFromPrevious,
+      dropoffRate,
+    };
+  });
+}
 
 function countByStep(events: AnalyticsEvent[]): Record<string, number> {
   const sessionsByStep: Record<string, Set<string>> = {};
   for (const e of events) {
-    const session = e.session_id ?? `legacy-${e.timestamp}`;
+    const session = getSessionKey(e);
     (sessionsByStep[e.step] ??= new Set()).add(session);
   }
   return Object.fromEntries(
@@ -31,43 +94,11 @@ function countBySource(events: AnalyticsEvent[]): Record<string, number> {
   const sessionsBySource: Record<string, Set<string>> = {};
   for (const e of events) {
     const src = e.utm_source ?? '(direct)';
-    const session = e.session_id ?? `legacy-${e.timestamp}`;
+    const session = getSessionKey(e);
     (sessionsBySource[src] ??= new Set()).add(session);
   }
   return Object.fromEntries(
     Object.entries(sessionsBySource).map(([source, sessions]) => [source, sessions.size])
-  );
-}
-
-function FunnelBar({ label, count, total, prev }: { label: string; count: number; total: number; prev: number }) {
-  const pct = total > 0 ? (count / total) * 100 : 0;
-  const dropOff = prev > 0 && prev !== count ? Math.round(((prev - count) / prev) * 100) : null;
-  const barWidth = Math.max(pct, 2);
-
-  return (
-    <div style={{ marginBottom: 16 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-        <span style={{ color: 'rgba(255,255,255,0.75)', fontSize: 13 }}>{label}</span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          {dropOff !== null && dropOff > 0 && (
-            <span style={{ fontSize: 11, color: '#f87171', background: 'rgba(248,113,113,0.12)', borderRadius: 4, padding: '1px 5px' }}>
-              -{dropOff}%
-            </span>
-          )}
-          <span style={{ color: 'white', fontWeight: 600, fontSize: 13, minWidth: 28, textAlign: 'right' }}>{count}</span>
-          <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, minWidth: 36, textAlign: 'right' }}>{pct.toFixed(1)}%</span>
-        </div>
-      </div>
-      <div style={{ height: 8, background: 'rgba(255,255,255,0.08)', borderRadius: 999, overflow: 'hidden' }}>
-        <div style={{
-          height: '100%',
-          width: `${barWidth}%`,
-          background: 'linear-gradient(90deg,#e8539c,#f27db8)',
-          borderRadius: 999,
-          transition: 'width 0.6s ease',
-        }} />
-      </div>
-    </div>
   );
 }
 
@@ -156,6 +187,7 @@ export default function DashboardScreen() {
   const [pw, setPw] = useState('');
   const [error, setError] = useState('');
   const [events, setEvents] = useState<AnalyticsEvent[]>([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (authed) void refresh();
@@ -172,7 +204,12 @@ export default function DashboardScreen() {
   }
 
   async function refresh() {
-    setEvents(await getAnalyticsEvents());
+    setLoading(true);
+    try {
+      setEvents(await getAnalyticsEvents());
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function handleClear() {
@@ -259,13 +296,15 @@ export default function DashboardScreen() {
 
   const stepCounts = countByStep(events);
   const sourceCounts = countBySource(events);
-  const totalStarts = stepCounts['welcome'] ?? 0;
-  const totalCompleted = stepCounts['result'] ?? 0;
+  const funnelSteps = buildQuizFunnel(events);
+  const totalVisitors = funnelSteps[0]?.reachedCount ?? 0;
+  const totalStarts = funnelSteps.find(step => step.id === 'quiz-start')?.reachedCount ?? 0;
+  const totalCompleted = funnelSteps.find(step => step.id === 'result')?.reachedCount ?? 0;
   const completionRate = totalStarts > 0 ? Math.round((totalCompleted / totalStarts) * 100) : 0;
   const totalSales = stepCounts['sales'] ?? 0;
 
   const uniqueSessions = new Set(
-    events.map(e => e.session_id ?? `legacy-${Math.floor(e.timestamp / (1000 * 60 * 30))}`)
+    events.map(getSessionKey)
   ).size;
 
   return (
@@ -333,27 +372,15 @@ export default function DashboardScreen() {
       <div style={{ padding: 16 }}>
         {/* KPI Cards */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12, marginBottom: 16 }}>
+          <StatCard label="Visitantes" value={totalVisitors} />
           <StatCard label="Inicios del quiz" value={totalStarts} />
           <StatCard label="Completaron quiz" value={totalCompleted} sub={`${completionRate}% tasa`} />
           <StatCard label="Llegaron a ventas" value={totalSales} />
-          <StatCard label="Sesiones (~30min)" value={uniqueSessions} />
         </div>
 
         {/* Funnel */}
-        <Card title="Embudo de conversión" icon={<TrendingDown size={16} />}>
-          {FUNNEL_STEPS.map((step, i) => {
-            const count = stepCounts[step.key] ?? 0;
-            const prev = i === 0 ? count : (stepCounts[FUNNEL_STEPS[i - 1].key] ?? 0);
-            return (
-              <FunnelBar
-                key={step.key}
-                label={step.label}
-                count={count}
-                total={totalStarts}
-                prev={prev}
-              />
-            );
-          })}
+        <Card title="Funil de Conversão" icon={<TrendingDown size={16} />}>
+          <QuizConversionFunnel steps={funnelSteps} loading={loading} />
         </Card>
 
         {/* Traffic Sources */}
@@ -404,20 +431,20 @@ export default function DashboardScreen() {
         {/* Step completion rates */}
         <Card title="Tasa de completación por paso" icon={<BarChart2 size={16} />}>
           <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginBottom: 12 }}>
-            Porcentaje de visitantes que llegaron a cada etapa (base: inicios)
+            Porcentaje de visitantes que llegaron a cada etapa (base: visitantes)
           </div>
-          {FUNNEL_STEPS.map(step => {
-            const count = stepCounts[step.key] ?? 0;
-            const rate = totalStarts > 0 ? Math.round((count / totalStarts) * 100) : 0;
+          {funnelSteps.map(step => {
+            const count = step.reachedCount;
+            const rate = Math.round(step.conversionFromStart);
             return (
-              <div key={step.key} style={{
+              <div key={step.id} style={{
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 padding: '6px 0',
                 borderBottom: '1px solid rgba(255,255,255,0.04)',
               }}>
-                <span style={{ color: 'rgba(255,255,255,0.65)', fontSize: 12 }}>{step.label}</span>
+                <span style={{ color: 'rgba(255,255,255,0.65)', fontSize: 12 }}>{step.name}</span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12 }}>{count}</span>
                   <span style={{
@@ -434,7 +461,7 @@ export default function DashboardScreen() {
         </Card>
 
         <p style={{ color: 'rgba(255,255,255,0.2)', fontSize: 10, textAlign: 'center', marginTop: 8, marginBottom: 24 }}>
-          Datos centralizados de visitantes · quiz_analytics_events
+          Datos centralizados de visitantes · {uniqueSessions} sesiones únicas · quiz_analytics_events
         </p>
       </div>
     </div>

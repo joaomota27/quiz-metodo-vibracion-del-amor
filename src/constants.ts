@@ -16,6 +16,28 @@ export const SCREEN_ORDER = [
   'sales',
 ] as const;
 
+export const QUIZ_STEP_LABELS: Record<(typeof SCREEN_ORDER)[number], string> = {
+  welcome: 'Visitantes',
+  'question-1': 'Estado emocional',
+  'question-2': 'Sentimiento sobre el amor',
+  'question-3': 'Conexión contigo misma',
+  'question-4': 'Necesidades y cuidado',
+  'question-5': 'Área emocional prioritaria',
+  processing: 'Procesando',
+  result: 'Conclusión del quiz',
+  vsl: 'Video',
+  sales: 'Página de ventas',
+};
+
+export const QUIZ_RELEVANT_FUNNEL_SCREENS = [
+  'question-1',
+  'question-2',
+  'question-3',
+  'question-4',
+  'question-5',
+  'result',
+] as const;
+
 export function getScreenProgress(screen: string): number {
   const quizScreens = [
     'question-1',

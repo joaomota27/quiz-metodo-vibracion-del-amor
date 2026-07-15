@@ -11,6 +11,7 @@ interface Props {
 
 const VTURB_SCRIPT_ID = 'vturb-vsl-player';
 const VTURB_SCRIPT_SRC = 'https://scripts.converteai.net/93cbf256-ee81-4707-9e7a-3c42b66a315a/players/6a44756079ce81d83fc3a246/v4/player.js';
+const CTA_DELAY_MS = 160_000;
 
 export default function VideoSection({ onContinue, soundEnabled, onSoundToggle }: Props) {
   const [showCTA, setShowCTA] = useState(false);
@@ -26,7 +27,7 @@ export default function VideoSection({ onContinue, soundEnabled, onSoundToggle }
       document.head.appendChild(script);
     }
 
-    const timer = window.setTimeout(() => setShowCTA(true), 8000);
+    const timer = window.setTimeout(() => setShowCTA(true), CTA_DELAY_MS);
     return () => window.clearTimeout(timer);
   }, []);
 
@@ -99,11 +100,6 @@ export default function VideoSection({ onContinue, soundEnabled, onSoundToggle }
       </div>
 
       <div style={{ padding: '0 20px 40px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {!showCTA && (
-          <CTAButton variant="secondary" onClick={onContinue}>
-            Continuar
-          </CTAButton>
-        )}
         {showCTA && (
           <div className="anim-fade-up">
             <CTAButton onClick={onContinue} pulse showArrow>

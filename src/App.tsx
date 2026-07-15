@@ -53,7 +53,9 @@ function loadState(): StoredState | null {
 function saveState(state: StoredState) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  } catch {}
+  } catch {
+    // Ignore localStorage write failures.
+  }
 }
 
 const EMPTY_ANSWERS: QuizAnswers = {};
@@ -61,8 +63,11 @@ const EMPTY_SCORES: Scores = { amorPropio: 0, confianza: 0, pazInterior: 0, aber
 
 export default function App() {
   const stored = loadState();
+  const initialScreen: Screen = typeof window !== 'undefined' && window.location.pathname === '/vendas'
+    ? 'sales'
+    : 'welcome';
 
-  const [screen, setScreen] = useState<Screen>('welcome');
+  const [screen, setScreen] = useState<Screen>(initialScreen);
   const [answers, setAnswers] = useState<QuizAnswers>(EMPTY_ANSWERS);
   const [scores, setScores] = useState<Scores>(EMPTY_SCORES);
   const [soundEnabled, setSoundEnabled] = useState<boolean>(stored?.soundEnabled ?? true);
@@ -90,8 +95,8 @@ export default function App() {
 
   useEffect(() => {
     initTracking();
-    saveAnalyticsEvent('PageView', 'welcome');
-  }, []);
+    saveAnalyticsEvent('PageView', initialScreen);
+  }, [initialScreen]);
 
   useEffect(() => {
     trackPageView();

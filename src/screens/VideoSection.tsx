@@ -10,7 +10,8 @@ interface Props {
 }
 
 const VTURB_SCRIPT_ID = 'vturb-vsl-player';
-const VTURB_SCRIPT_SRC = 'https://scripts.converteai.net/93cbf256-ee81-4707-9e7a-3c42b66a315a/players/6a44756079ce81d83fc3a246/v4/player.js';
+const VTURB_PLAYER_ID = 'vid-6a56e2c42e06af0fce8732e7';
+const VTURB_SCRIPT_SRC = 'https://scripts.converteai.net/0b4b0ccb-8fa2-4fda-9741-7e9174f6279d/players/6a56e2c42e06af0fce8732e7/v4/player.js';
 const CTA_DELAY_MS = 160_000;
 
 export default function VideoSection({ onContinue, soundEnabled, onSoundToggle }: Props) {
@@ -83,7 +84,7 @@ export default function VideoSection({ onContinue, soundEnabled, onSoundToggle }
             Keep this markup aligned with the ConverteAI embed.
           */}
           {(
-            <vturb-smartplayer id="vid-6a44756079ce81d83fc3a246" style={{ display: 'block', margin: '0 auto', width: '100%' }}>
+            <vturb-smartplayer id={VTURB_PLAYER_ID} style={{ display: 'block', margin: '0 auto', width: '100%' }}>
               <div
                 className="vturb-player-placeholder"
                 style={{
